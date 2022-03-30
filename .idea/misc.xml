@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/drawable/bg_input.xml" value="0.2125" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/drawable/circular_button_grey.xml" value="0.3697916666666667" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/drawable/ic_check_white.xml" value="0.3697916666666667" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/drawable/ic_fingerprint_blue.xml" value="0.2125" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/drawable/ic_navigate_before_grey.xml" value="0.2125" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/drawable/ic_refresh_white.xml" value="0.3697916666666667" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/drawable/ic_take_photo_white.xml" value="0.3697916666666667" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/drawable/rounded_button_main_color.xml" value="0.2125" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/drawable/stroke_shape.xml" value="0.2125" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/layout/activity_loading.xml" value="0.3482051282051282" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/layout/activity_login.xml" value="0.19635416666666666" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/layout/activity_main.xml" value="0.25149700598802394" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/layout/dialog_picture.xml" value="0.3536458333333333" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/layout/fragment_face.xml" value="0.3536458333333333" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/layout/fragment_face_register.xml" value="0.3482051282051282" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/layout/fragment_finger.xml" value="0.3536458333333333" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/layout/fragment_finger_register.xml" value="0.19635416666666666" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/layout/fragment_home.xml" value="0.18177083333333333" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/layout/fragment_loading.xml" value="0.3482051282051282" />
+        <entry key="..\:/AndroidProject/BP_attendance/app/src/main/res/layout/fragment_register.xml" value="0.3482051282051282" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
