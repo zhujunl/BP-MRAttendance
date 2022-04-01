@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">中正考勤</string>
+    <string name="app_name">考勤</string>
 
 
     <string name="text_verify_success">验证通过</string>
