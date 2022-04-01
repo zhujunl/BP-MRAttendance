@@ -4,6 +4,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
+import com.miaxis.bp_entry.R;
+import com.miaxis.bp_entry.app.App;
+
+import es.dmoral.toasty.Toasty;
+
 
 public class ToastManager {
 
@@ -45,13 +50,13 @@ public class ToastManager {
             switch (toastMode) {
                 case SUCCESS:
 //                    toast = Toasty.success(App.getInstance().getApplicationContext(), message, Toast.LENGTH_SHORT, true);
-//                    toast = Toasty.custom(App.getInstance().getApplicationContext(), message, R.drawable.ic_check_white_24dp, R.color.main_color, duration, true, true);
+                    toast = Toasty.custom(App.getInstance().getApplicationContext(), message, R.drawable.ic_check_white_24dp, R.color.main_color, duration, true, true);
                     break;
                 case ERROR:
-//                    toast = Toasty.error(App.getInstance().getApplicationContext(), message, duration, true);
+                    toast = Toasty.error(App.getInstance().getApplicationContext(), message, duration, true);
                     break;
                 case INFO:
-//                    toast = Toasty.info(App.getInstance().getApplicationContext(), message, duration, true);
+                    toast = Toasty.info(App.getInstance().getApplicationContext(), message, duration, true);
                     break;
             }
             toast.show();

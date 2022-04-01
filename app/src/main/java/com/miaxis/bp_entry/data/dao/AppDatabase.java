@@ -5,6 +5,7 @@ import android.app.Application;
 import com.miaxis.bp_entry.data.converter.DateConverter;
 import com.miaxis.bp_entry.data.converter.StringListConverter;
 import com.miaxis.bp_entry.data.entity.Config;
+import com.miaxis.bp_entry.data.entity.Staff;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -13,7 +14,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Config.class}, version = 1)
+@Database(entities = {Config.class, Staff.class}, version = 1)
 @TypeConverters({StringListConverter.class,DateConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -49,5 +50,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
 
     public abstract ConfigDao configDao();
+
+    public abstract StaffDao staffDao();
 
 }

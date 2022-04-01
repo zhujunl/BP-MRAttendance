@@ -5,6 +5,8 @@ import android.text.TextUtils;
 
 import com.miaxis.bp_entry.app.App;
 import com.miaxis.bp_entry.bridge.SingleLiveEvent;
+import com.miaxis.bp_entry.data.entity.Staff;
+import com.miaxis.bp_entry.data.entity.StaffManager;
 import com.miaxis.bp_entry.viewModel.BaseViewModel;
 
 import androidx.databinding.ObservableField;
@@ -21,8 +23,8 @@ public class RegisterViewModel extends BaseViewModel {
     public final static String FINGER2 = "2";
 
     public ObservableField<String> name = new ObservableField<>();
-    public ObservableField<String> number = new ObservableField<>();
-    public ObservableField<String> phone = new ObservableField<>();
+    public ObservableField<String> placeId = new ObservableField<>();
+    public ObservableField<String> code = new ObservableField<>();
 
     public ObservableField<String> faceFeatureHint = new ObservableField<>("点击采集");
     public ObservableField<String> finger1FeatureHint = new ObservableField<>("点击采集");
@@ -40,11 +42,9 @@ public class RegisterViewModel extends BaseViewModel {
     }
 
     public boolean checkInput() {
-        if (TextUtils.isEmpty(name.get())
-                || TextUtils.isEmpty(number.get())
-                || TextUtils.isEmpty(phone.get())
+        if (TextUtils.isEmpty(placeId.get())
+                || TextUtils.isEmpty(code.get())
                 || TextUtils.isEmpty(featureCache)
-                || TextUtils.isEmpty(maskFeatureCache)
                 || TextUtils.isEmpty(fingerFeature1)
                 || TextUtils.isEmpty(fingerFeature2)
                 || headerCache == null) {
@@ -63,6 +63,13 @@ public class RegisterViewModel extends BaseViewModel {
 //                    fingerFeature1,
 //                    fingerFeature2,
 //                    headerCache);
+            Staff staff=new Staff.Builder()
+                    .place(placeId.get())
+                    .code(code.get())
+                    .faceFeature(featureCache)
+                    .finger0(fingerFeature1)
+                    .finger1(fingerFeature2).builder();
+            StaffManager.getInstance().save(staff);
             emitter.onNext(Boolean.TRUE);
         })
                 .subscribeOn(Schedulers.from(App.getInstance().getThreadExecutor()))

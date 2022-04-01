@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
+        <variable
+            name="viewModel"
+            type="com.miaxis.bp_entry.view.login.LoginViewModel" />
 
     </data>
 
@@ -34,6 +37,7 @@
                     android:id="@+id/place_id"
                     android:textSize="18sp"
                     android:background="@drawable/bg_input"
+                    android:inputType="numberDecimal"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"/>
@@ -72,6 +76,7 @@
                     android:layout_height="wrap_content"/>
                 <EditText
                     android:id="@+id/atten_ip"
+                    android:inputType="numberDecimal"
                     android:textSize="18sp"
                     android:background="@drawable/bg_input"
                     android:layout_width="0dp"

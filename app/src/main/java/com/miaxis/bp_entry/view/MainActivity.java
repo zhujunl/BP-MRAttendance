@@ -2,6 +2,7 @@ package com.miaxis.bp_entry.view;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.bp_entry.R;
+import com.miaxis.bp_entry.app.App;
 import com.miaxis.bp_entry.databinding.ActivityMainBinding;
 import com.miaxis.bp_entry.view.base.BaseActivity;
 import com.miaxis.bp_entry.view.base.BaseViewModelFragment;
@@ -9,12 +10,14 @@ import com.miaxis.bp_entry.view.base.OnFragmentInteractionListener;
 import com.miaxis.bp_entry.view.login.LoginFragment;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
-public class MainActivity extends BaseActivity<ActivityMainBinding>  implements OnFragmentInteractionListener {
+public class MainActivity extends BaseActivity<ActivityMainBinding>  implements OnFragmentInteractionListener  {
 
     private MaterialDialog waitDialog;
     private MaterialDialog resultDialog;
     private MaterialDialog quitDialog;
+    private MainViewModel viewModel;
     private String root;
 
 
@@ -25,11 +28,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>  implements 
 
     @Override
     protected void initData() {
-        replaceFragment(LoginFragment.getInstance());
+        viewModel=ViewModelProvider.AndroidViewModelFactory.getInstance(App.getInstance()).create(MainViewModel.class);
     }
 
     @Override
     protected void initView() {
+        replaceFragment(LoginFragment.getInstance());
         initDialog();
     }
 

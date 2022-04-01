@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.miaxis.bp_entry.R;
 import com.miaxis.bp_entry.auxiliary.OnLimitClickHelper;
+import com.miaxis.bp_entry.data.entity.Staff;
 import com.miaxis.bp_entry.databinding.FragmentRegisterBinding;
 import com.miaxis.bp_entry.event.FaceRegisterEvent;
 import com.miaxis.bp_entry.event.FingerRegisterEvent;
@@ -18,8 +19,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 public class RegisterFragment extends BaseViewModelFragment<FragmentRegisterBinding, RegisterViewModel> {
 
-    public static RegisterFragment newInstance() {
-        return new RegisterFragment();
+    private Staff staff;
+
+    public static RegisterFragment newInstance(Staff staff) {
+        RegisterFragment registerFragment=new RegisterFragment();
+        registerFragment.setStaff(staff);
+        return registerFragment;
     }
 
     public RegisterFragment() {
@@ -43,13 +48,15 @@ public class RegisterFragment extends BaseViewModelFragment<FragmentRegisterBind
 
     @Override
     protected void initData() {
-        viewModel.registerFlag.observe(this, flag -> {
-            onBackPressed();
-        });
+        viewModel.placeId.set(staff.getPlace());
+        viewModel.code.set(staff.getCode());
     }
 
     @Override
     protected void initView() {
+        viewModel.registerFlag.observe(this, flag -> {
+            onBackPressed();
+        });
         binding.ivBack.setOnClickListener(v -> onBackPressed());
         binding.tvHeader.setOnClickListener(new OnLimitClickHelper(view -> mListener.replaceFragment(FaceRegisterFragment.newInstance())));
         binding.tvFinger1.setOnClickListener(new OnLimitClickHelper(view -> mListener.replaceFragment(FingerRegisterFragment.newInstance(RegisterViewModel.FINGER1))));
@@ -99,5 +106,9 @@ public class RegisterFragment extends BaseViewModelFragment<FragmentRegisterBind
     public void onDestroyView() {
         super.onDestroyView();
         EventBus.getDefault().unregister(this);
+    }
+
+    public void setStaff(Staff staff) {
+        this.staff = staff;
     }
 }
