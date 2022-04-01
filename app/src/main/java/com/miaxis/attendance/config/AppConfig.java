@@ -48,7 +48,7 @@ public class AppConfig {
     /**
      * 设最大分贝
      */
-    public static final int MaxAmplitude = 1000 * 2;
+    public static final int MaxAmplitude = 1000 * 20000;
 
 
     /**
