@@ -1,0 +1,17 @@
+<!--?xml version="1.0" encoding="utf-8"?-->
+<resources>
+    <!--   //0-左手小指 1-左手无名指 2-左手中指 3-左手食指 4-左手拇指
+       5-右手拇指 6-右手食指 7-右手中指 8-右手无名指 9-右手小指-->
+    <string-array name="finger">
+        <item>左手小指</item>
+        <item>左手无名指</item>
+        <item>左手中指</item>
+        <item>左手食指</item>
+        <item>左手拇指</item>
+        <item>右手拇指</item>
+        <item>右手食指</item>
+        <item>右手中指</item>
+        <item>右手无名指</item>
+        <item>右手小指</item>
+    </string-array>
+</resources>

@@ -1,0 +1,8 @@
+rootProject.name = "中正考勤(MR990)"
+include ':app'
+include ':device_MR990'
+
+
+//include ':HttpServer'
+//include ':httpd'
+//include ':application'

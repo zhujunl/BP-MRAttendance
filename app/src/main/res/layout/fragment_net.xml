@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.miaxis.attendance.ui.net.NetViewModel" />
+    </data>
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/tv_ip"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:textColor="@color/white"-->
+    <!--        tools:background="@color/black"-->
+    <!--        tools:context=".ui.net.NetFragment"-->
+    <!--        tools:text="@string/text_ip">-->
+
+    <!--    </TextView>-->
+
+    <ImageView
+        android:id="@+id/iv_ip"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.net.NetFragment"
+        tools:text="@string/text_ip" />
+
+</layout>

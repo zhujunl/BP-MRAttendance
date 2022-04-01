@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.miaxis.attendance.ui.bar.BarViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_bar"
+        tools:context=".ui.bar.BarFragment">
+
+        <TextView
+            android:id="@+id/tv_cpu"
+            tools:text="cpu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintRight_toLeftOf="@id/tv_battery"
+            app:layout_constraintBottom_toTopOf="@id/tv_date"/>
+
+        <TextView
+            android:id="@+id/tv_battery"
+            tools:text="battery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            app:layout_constraintLeft_toRightOf="@id/tv_cpu"
+            app:layout_constraintBottom_toTopOf="@id/tv_date"/>
+
+
+        <com.miaxis.attendance.widget.TimeView
+            android:id="@+id/tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:textColor="@color/white"
+            android:textSize="35sp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:time_format="date"
+            tools:text="2021-01-01" />
+
+
+        <com.miaxis.attendance.widget.TimeView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_date"
+            app:time_format="time"
+            tools:text="11:11" />
+
+        <!--        <com.miaxis.attendance.widget.TimeView-->
+        <!--            android:id="@+id/tv_week"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="5dp"-->
+        <!--            android:layout_marginBottom="5dp"-->
+        <!--            android:textColor="@color/white"-->
+        <!--            android:textSize="20sp"-->
+        <!--            android:textStyle="bold"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@id/tv_time"-->
+        <!--            app:layout_constraintLeft_toRightOf="@id/tv_time"-->
+        <!--            app:time_format="week"-->
+        <!--            tools:text="周一" />-->
+
+        <com.miaxis.attendance.widget.TimeView
+            android:id="@+id/tv_week"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_time"
+            app:time_format="week"
+            tools:text="周一" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_image"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/logo"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/roundedCornerImageStyle"
+            app:strokeColor="@color/white"
+            app:strokeWidth="1dp" />
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_image"
+            tools:text="@string/text_name" />
+
+        <TextView
+            android:id="@+id/tv_tempFloat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            tools:text="@string/text_tempFloat"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_name"/>
+
+
+        <TextView
+            android:id="@+id/tv_user_counts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toTopOf="@id/fl_ip"
+            app:layout_constraintLeft_toLeftOf="parent"
+            tools:text="@string/text_ip" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="30dp"
+            android:gravity="center"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:text="@string/text_verify_success"
+            android:textColor="#28FD02"
+            android:textSize="35sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/tv_name"
+            tools:visibility="visible" />
+
+        <!--        <FrameLayout-->
+        <!--            android:id="@+id/fl_ip"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:textColor="@color/white"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--            tools:text="@string/text_ip" />-->
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_cloud"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/fl_ip" />
+
+        <FrameLayout
+            android:id="@+id/fl_ip"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/iv_cloud"
+            app:layout_constraintRight_toLeftOf="@id/iv_cloud2" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_cloud2"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/fl_ip"
+            app:layout_constraintRight_toRightOf="parent" />
+
+
+        <com.miaxis.attendance.ui.bar.widget.ClickableLayout
+            android:id="@+id/cl_click"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

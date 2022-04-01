@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vp_advertising"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            tools:context=".ui.advertising.AdvertisingFragment" />
+
+        <FrameLayout
+            android:id="@+id/fl_mic"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:background="@color/black"
+            tools:background="#424242" />
+
+    </FrameLayout>
+
+</layout>

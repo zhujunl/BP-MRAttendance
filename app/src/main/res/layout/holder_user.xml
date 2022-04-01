@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="5dp"
+        android:background="#DDDDDD">
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:text="@string/text_name"
+            app:layout_constraintBottom_toTopOf="@id/tv_work"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_work"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_work_number"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@id/tv_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_name" />
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_line1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.3" />
+
+        <!--        <View-->
+        <!--            android:layout_width="1dp"-->
+        <!--            android:layout_height="match_parent"/>-->
+
+        <TextView
+            android:id="@+id/tv_face"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxEms="1"
+            android:text="@string/text_face"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@id/gl_line1"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_face"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:src="@drawable/logo"
+            app:layout_constraintLeft_toRightOf="@id/tv_face" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_line2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+
+<!--        <TextView-->
+<!--            android:id="@+id/tv_finger"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:maxEms="1"-->
+<!--            android:text="@string/text_finger"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintLeft_toLeftOf="@id/gl_line2"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+        <LinearLayout
+            android:id="@+id/ll_fingers"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            app:layout_constraintLeft_toRightOf="@id/gl_line2"
+            app:layout_constraintRight_toRightOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</layout>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        tools:context=".ui.preview.PreviewFragment">
+
+        <com.miaxis.attendance.widget.CameraTextureView
+            android:id="@+id/ttv_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:keepScreenOn="true" />
+
+        <SurfaceView
+            android:id="@+id/sv_preview_nir"
+            android:layout_width="1px"
+            android:layout_height="1px"
+            android:layout_gravity="bottom|end"
+            android:keepScreenOn="true" />
+
+        <org.zz.widget.FaceRectView
+            android:id="@+id/frv_rect"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:layout_width="316px"
+            android:layout_height="107px"
+            android:layout_marginStart="50px"
+            android:layout_marginTop="50px"
+            android:src="@drawable/logo_2" />
+
+    </FrameLayout>
+
+
+</layout>

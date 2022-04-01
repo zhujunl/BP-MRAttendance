@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="time_view">
+        <attr name="time_format" format="enum">
+            <enum name="time" value="0" />
+            <enum name="date" value="1" />
+            <enum name="week" value="2" />
+        </attr>
+    </declare-styleable>
+</resources>

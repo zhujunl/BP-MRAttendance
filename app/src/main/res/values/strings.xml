@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">中正考勤</string>
+
+
+    <string name="text_verify_success">验证通过</string>
+
+    <string name="text_name">姓名</string>
+    <string name="text_tempFloat">相似度：1</string>
+    <string name="text_work_number">工号</string>
+
+    <string name="text_position">指纹位置：</string>
+
+
+    <string name="text_face">头像</string>
+    <string name="text_finger">指纹</string>
+    <string name="title_finger">指纹录入</string>
+
+
+    <string name="text_ip">IP</string>
+
+    <string name="btn_cancel">取消</string>
+    <string name="btn_skip">跳过</string>
+    <string name="btn_try">重试</string>
+
+
+    <string name="btn_back">返回</string>
+    <string name="title_manager">人员管理</string>
+
+    <string name="btn_previous">上一页</string>
+    <string name="btn_next">下一页</string>
+    <string name="btn_confirm">确认</string>
+    <string name="btn_capture">采集</string>
+
+</resources>
