@@ -4,19 +4,18 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.SurfaceHolder;
 
 import com.miaxis.attendance.App;
 import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.bean.AttendanceBean;
 import com.miaxis.attendance.data.entity.Attendance;
-import com.miaxis.attendance.data.entity.Face;
 import com.miaxis.attendance.data.entity.LocalImage;
-import com.miaxis.attendance.data.entity.Person;
+import com.miaxis.attendance.data.entity.Staff;
 import com.miaxis.attendance.data.model.AttendanceModel;
-import com.miaxis.attendance.data.model.FaceModel;
 import com.miaxis.attendance.data.model.LocalImageModel;
-import com.miaxis.attendance.data.model.PersonModel;
+import com.miaxis.attendance.data.model.StaffModel;
 import com.miaxis.attendance.device.MR990Device;
 import com.miaxis.common.camera.CameraConfig;
 import com.miaxis.common.camera.CameraHelper;
@@ -26,7 +25,6 @@ import com.miaxis.common.camera.MXFrame;
 import com.miaxis.common.response.ZZResponse;
 import com.miaxis.common.response.ZZResponseCode;
 import com.miaxis.common.utils.ListUtils;
-import com.miaxis.common.utils.MapUtils;
 
 import org.zz.api.MXFace;
 import org.zz.api.MXFaceIdAPI;
@@ -37,7 +35,6 @@ import org.zz.api.MxImage;
 import java.text.DecimalFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -55,6 +52,7 @@ import timber.log.Timber;
 public class PreviewViewModel extends ViewModel implements CameraPreviewCallback {
 
     private static final String TAG = "PreviewViewModel";
+    private final DecimalFormat decimalFormat= new DecimalFormat("##0.0000");
     private Handler mHandler = new Handler();
 
     /**
@@ -311,6 +309,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
     }
 
     private String lastUserID;
+    private String lastPlaceID;
     private long lastTime;
 
     /**
@@ -357,18 +356,26 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     emitter.onNext(ZZResponse.CreateFail(featureExtract.getCode(), featureExtract.getMsg()));
                     return;
                 }
-                HashMap<String, Face> all = FaceModel.findAll();
-                if (MapUtils.isNullOrEmpty(all)) {
-                    saveFailedAttendance(rgbImage, rgbFace);
-                    emitter.onNext(ZZResponse.CreateFail(-80, "人脸数据库为空"));
-                    return;
-                }
-                Face tempFace = null;
+//                List<Face> all= FaceModel.findAll();
+//                Face tempFace = null;
+//                float tempFloat = 0F;
+//                for (Face value :all) {
+//                    if (value != null) {
+//                        MXResult<Float> result = MXFaceIdAPI.getInstance().mxFeatureMatch(featureExtract.getData(), value.FaceFeature);
+//                        if (MXResult.isSuccess(result)) {
+//                            if (result.getData() >= tempFloat) {
+//                                tempFace = value;
+//                                tempFloat = result.getData();
+//                            }
+//                        }
+//                    }
+//                }
+                List<Staff> all=StaffModel.findStaff();
+                Staff tempFace = null;
                 float tempFloat = 0F;
-                for (Map.Entry<String, Face> entry : all.entrySet()) {
-                    Face value = entry.getValue();
+                for (Staff value :all) {
                     if (value != null) {
-                        MXResult<Float> result = MXFaceIdAPI.getInstance().mxFeatureMatch(featureExtract.getData(), value.FaceFeature);
+                        MXResult<Float> result = MXFaceIdAPI.getInstance().mxFeatureMatch(featureExtract.getData(), value.getFaceFeature());
                         if (MXResult.isSuccess(result)) {
                             if (result.getData() >= tempFloat) {
                                 tempFace = value;
@@ -382,21 +389,23 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     emitter.onNext(ZZResponse.CreateFail(-81, "正在识别中，最大匹配值：" + tempFloat));
                     return;
                 }
-                if (lastUserID != null && lastUserID.equals(tempFace.UserId) && (System.currentTimeMillis() - lastTime) <= AppConfig.verifyTimeOut) {
+                if (lastUserID != null &&lastPlaceID!=null&& lastUserID.equals(tempFace.getCode())&&lastPlaceID.equals(tempFace.getPlace()) && (System.currentTimeMillis() - lastTime) <= AppConfig.verifyTimeOut) {
                     emitter.onNext(ZZResponse.CreateFail(-83, "重复识别"));
                     return;
                 }
-                lastUserID=tempFace.UserId;
+                lastUserID=tempFace.getCode();
+                lastPlaceID=tempFace.getPlace();
                 lastTime = System.currentTimeMillis();
-                Person person = PersonModel.findByUserID(tempFace.UserId);
-                if (person == null) {
+//                Person person = PersonModel.findByUserID(tempFace.UserId);
+                Staff staff= StaffModel.findStaffByCode(tempFace.getCode(), tempFace.getPlace());
+                if (staff == null) {
                     saveFailedAttendance(rgbImage, rgbFace);
-                    emitter.onNext(ZZResponse.CreateFail(-82, "该人员不存在，人员ID：" + tempFace.UserId));
+                    emitter.onNext(ZZResponse.CreateFail(-82, "该人员不存在，人员ID：" +tempFace.getCode()+"场所ID:  "+ tempFace.getPlace()));
                     return;
                 }
                 //识别通过
 
-                String capturePath = AppConfig.Path_CaptureImage + "face" + "_" + person.UserId + "_" + System.currentTimeMillis() + ".jpeg";
+                String capturePath = AppConfig.Path_CaptureImage + "face" + "_" + staff.getCode() +"place_"+staff.getPlace()+ "_" + System.currentTimeMillis() + ".jpeg";
                 MXResult<?> save = MXImageToolsAPI.getInstance().ImageSave(capturePath, rgbImage.buffer, rgbImage.width, rgbImage.height, 3);
                 if (!MXResult.isSuccess(save)) {
                     emitter.onNext(ZZResponse.CreateFail(save.getCode(), save.getMsg()));
@@ -420,7 +429,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     return;
                 }
                 MxImage cutImage = cutRect.getData();
-                String cutPath = AppConfig.Path_CutImage + person.UserId + "_" + System.currentTimeMillis() + ".jpeg";
+                String cutPath = AppConfig.Path_CutImage + staff.getCode() +"_"+staff.getPlace()+ "_" + System.currentTimeMillis() + ".jpeg";
                 MXResult<?> cutSave = MXImageToolsAPI.getInstance().ImageSave(cutPath, cutImage.buffer, cutImage.width, cutImage.height, 3);
                 if (!MXResult.isSuccess(cutSave)) {
                     emitter.onNext(ZZResponse.CreateFail(cutSave.getCode(), cutSave.getMsg()));
@@ -433,31 +442,20 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     emitter.onNext(ZZResponse.CreateFail(-71, "保存人脸截图记录失败"));
                     return;
                 }
-                Attendance attendance = new Attendance();
-                attendance.UserId = person.UserId;
-                //attendance.BaseImage = person.FaceImage;
-                attendance.CaptureImage = captureLocalImage.id;
-                attendance.CutImage = cutLocalImage.id;
-                attendance.Mode = 1;
-                attendance.Status = 1;
-                attendance.id = AttendanceModel.insert(attendance);
-                if (attendance.id <= 0) {
-                    emitter.onNext(ZZResponse.CreateFail(-60, "保存考勤记录失败"));
-                    return;
-                }
+
                 //List<LocalImage> byID = LocalImageModel.findByID(person.FaceImage);
                 //if (ListUtils.isNullOrEmpty(byID)) {
                 //    emitter.onNext(ZZResponse.CreateFail(-61, "该人员不存在，UserId：" + tempFace.UserId));
                 //    return;
                 //}
                 AttendanceBean attendanceBean = new AttendanceBean();
-                attendanceBean.AttendanceId = attendance.id;
                 attendanceBean.Status = 1;
                 attendanceBean.Mode = 1;
-                attendanceBean.UserId = person.UserId;
+                attendanceBean.Code = staff.getCode();
+                attendanceBean.Place=staff.getPlace();
                 attendanceBean.CaptureImage = capturePath;
                 attendanceBean.CutImage = cutPath;
-                attendanceBean.UserName = person.Name;
+                attendanceBean.UserName = staff.getCode();
 //                attendanceBean.tempFloat=new DecimalFormat("##0.00").format(tempFloat);
                 attendanceBean.tempFloat=tempFloat;
                 attendanceBean.tempType=0;
@@ -545,6 +543,28 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
         this.StartCountdown.postValue(false);
         CameraHelper.getInstance().stop();
         CameraHelper.getInstance().free();
+    }
+
+    public String format(float f){
+        return decimalFormat.format(f);
+    }
+
+    public AtomicReference<String> LastUserId = new AtomicReference<>();
+    public AtomicReference<String> LastPlaceId = new AtomicReference<>();
+    public boolean isNewUser(AttendanceBean attendanceBean) {
+        boolean isNew = attendanceBean != null &&
+                !TextUtils.equals(attendanceBean.Code, this.LastUserId.get()) &&
+                !TextUtils.equals(attendanceBean.Place,this.LastPlaceId.get());
+        if (isNew) {
+            this.LastUserId.set(attendanceBean.Code);
+            this.LastPlaceId.set(attendanceBean.Place);
+        }
+        return isNew;
+    }
+
+    public void setNewUserReset() {
+        this.LastUserId.set(null);
+        this.LastPlaceId.set(null);
     }
 
 }

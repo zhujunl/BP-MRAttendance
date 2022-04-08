@@ -31,8 +31,6 @@ public interface LocalImageDao {
     @Query("SELECT * FROM LocalImage WHERE LocalImage.LocalPath=:localPath LIMIT 1")
     List<LocalImage> findByLocalPath(String localPath);
 
-    @Query("SELECT * FROM LocalImage WHERE LocalImage.RemotePath=:remotePath LIMIT 1")
-    List<LocalImage> findByRemotePath(String remotePath);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(LocalImage localImage);

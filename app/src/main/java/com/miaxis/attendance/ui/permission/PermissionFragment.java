@@ -56,7 +56,6 @@ public class PermissionFragment extends BaseBindingFragment<FragmentPermissionBi
                     if (aBoolean) {
                         MainViewModel mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
                         mainViewModel.deleteFile();
-                        mainViewModel.StartThread();
                         io.reactivex.disposables.Disposable disposable = Observable.create((ObservableOnSubscribe<MXResult<?>>) emitter -> {
                             MXResult<?> initAlg = App.getInstance().init();
                             Timber.e("initAlg:" + initAlg);

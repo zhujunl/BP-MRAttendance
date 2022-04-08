@@ -3,8 +3,9 @@ package com.miaxis.attendance;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.util.Log;
 
-import com.miaxis.attendance.api.HttpApi;
+//import com.miaxis.attendance.api.HttpApi;
 import com.miaxis.attendance.callback.ActivityCallbacks;
 import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.AppDataBase;
@@ -16,8 +17,10 @@ import com.miaxis.attendance.tts.TTSSpeechManager;
 import com.miaxis.attendance.ui.finger.MR990FingerStrategy;
 import com.miaxis.common.camera.CameraHelper;
 import com.miaxis.common.utils.FileUtils;
+import com.tencent.mmkv.MMKV;
 
 import org.jetbrains.annotations.NotNull;
+import org.zz.api.MXFaceAPI;
 import org.zz.api.MXFaceIdAPI;
 import org.zz.api.MXResult;
 
@@ -41,11 +44,13 @@ public class App extends Application {
     private static App context;
     public final ExecutorService threadExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private final UploadAttendance mUploadAttendance = new UploadAttendance();
+    private static MMKV kv;
 
     @Override
     public void onCreate() {
         super.onCreate();
         context = this;
+        MMKV.initialize(this);
         //        if (BuildConfig.DEBUG) {
         Timber.plant(new Timber.DebugTree() {
             @Override
@@ -103,9 +108,12 @@ public class App extends Application {
         AppDataBase.getInstance().init(AppConfig.Path_DataBase, this);
         FaceModel.init();
         FingerModel.init();
-        HttpApi.init(this);
+        kv=MMKV.defaultMMKV();
+//        HttpApi.init(this);
         TTSSpeechManager.getInstance().init(this, null);
         MR990FingerStrategy.getInstance().init();
+        int ret=MXFaceAPI.getInstance().mxInitAlg(this,null,null);
+        Log.e("face_init:",""+ret);
         return MXFaceIdAPI.getInstance().mxInitAlg(this, null, null);
     }
 
@@ -113,6 +121,10 @@ public class App extends Application {
         if (!this.mUploadAttendance.isRunning()) {
             this.threadExecutor.execute(this.mUploadAttendance);
         }
+    }
+
+    public MMKV getKv(){
+        return kv;
     }
 }
 

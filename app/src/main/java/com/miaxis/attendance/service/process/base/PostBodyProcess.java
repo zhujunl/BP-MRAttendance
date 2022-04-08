@@ -26,11 +26,12 @@ public abstract class PostBodyProcess extends BasePostProcess {
         Map<String, String> param = new HashMap<>();
         session.parseBody(param);
         Map<String, String> parms = session.getParms();
-        Timber.e( "parameter: " + HttpServer.Gson.toJson(parms));
-        if (MapUtils.isNullOrEmpty(parms)) {
+        Timber.e( "parameter: parmsparms" + HttpServer.Gson.toJson(parms));
+        Timber.e( "parameter: " + HttpServer.Gson.toJson(param));
+        if (MapUtils.isNullOrEmpty(param)) {
             return MxResponse.CreateFail(-1,"Error parameter");
         }
-        return onPostProcess(parms);
+        return onPostProcess(param);
     }
 
     protected abstract MxResponse<?> onPostProcess(Map<String, String> parameter) throws Exception;

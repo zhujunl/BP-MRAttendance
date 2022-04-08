@@ -1,6 +1,5 @@
 package com.miaxis.attendance.ui.bar;
 
-import android.os.SystemClock;
 import android.text.TextUtils;
 
 import com.miaxis.attendance.data.bean.AttendanceBean;
@@ -20,15 +19,18 @@ public class BarViewModel extends ViewModel {
 
 
     public AtomicReference<String> LastUserId = new AtomicReference<>();
+    public AtomicReference<String> LastPlaceId = new AtomicReference<>();
     private final DecimalFormat decimalFormat= new DecimalFormat("##0.0000");
     public BarViewModel() {
     }
 
     public boolean isNewUser(AttendanceBean attendanceBean) {
-        boolean isNew = attendanceBean != null && !
-                TextUtils.equals(attendanceBean.UserId, this.LastUserId.get());
+        boolean isNew = attendanceBean != null &&
+                !TextUtils.equals(attendanceBean.Code, this.LastUserId.get()) &&
+                !TextUtils.equals(attendanceBean.Place,this.LastPlaceId.get());
         if (isNew) {
-            this.LastUserId.set(attendanceBean.UserId);
+            this.LastUserId.set(attendanceBean.Code);
+            this.LastPlaceId.set(attendanceBean.Place);
         }
         return isNew;
     }
@@ -38,6 +40,7 @@ public class BarViewModel extends ViewModel {
 
     public void setNewUserReset() {
         this.LastUserId.set(null);
+        this.LastPlaceId.set(null);
     }
 
     public String format(float f){

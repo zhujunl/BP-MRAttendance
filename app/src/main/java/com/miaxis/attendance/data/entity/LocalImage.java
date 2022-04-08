@@ -23,7 +23,7 @@ public class LocalImage {
      * 用户ID
      */
     public String LocalPath;
-    public String RemotePath;
+//    public String RemotePath;
     public long create_time;//创建时间
     public long update_time;//修改时间
 
@@ -37,7 +37,7 @@ public class LocalImage {
                 "id=" + id +
                 //", Type=" + Type +
                 ", LocalPath='" + LocalPath + '\'' +
-                ", RemotePath='" + RemotePath + '\'' +
+//                ", RemotePath='" + RemotePath + '\'' +
                 ", create_time=" + create_time +
                 ", update_time=" + update_time +
                 '}';

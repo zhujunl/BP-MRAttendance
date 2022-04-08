@@ -16,35 +16,84 @@
         android:background="@drawable/bg_bar"
         tools:context=".ui.bar.BarFragment">
 
-        <TextView
-            android:id="@+id/tv_cpu"
-            tools:text="cpu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintRight_toLeftOf="@id/tv_battery"
-            app:layout_constraintBottom_toTopOf="@id/tv_date"/>
+        <!--        <com.miaxis.attendance.widget.TimeView-->
+        <!--            android:id="@+id/tv_week"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="5dp"-->
+        <!--            android:layout_marginBottom="5dp"-->
+        <!--            android:textColor="@color/white"-->
+        <!--            android:textSize="20sp"-->
+        <!--            android:textStyle="bold"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@id/tv_time"-->
+        <!--            app:layout_constraintLeft_toRightOf="@id/tv_time"-->
+        <!--            app:time_format="week"-->
+        <!--            tools:text="周一" />-->
+
 
         <TextView
-            android:id="@+id/tv_battery"
-            tools:text="battery"
+            android:id="@+id/title"
+            android:text="标题"
+            android:textColor="@color/white"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            app:layout_constraintLeft_toRightOf="@id/tv_cpu"
-            app:layout_constraintBottom_toTopOf="@id/tv_date"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
+        <TextView
+            android:id="@+id/place"
+            android:text="场所ID"
+            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintStart_toStartOf="@id/title"
+            app:layout_constraintEnd_toEndOf="@id/title"/>
+
+        <TextView
+            android:id="@+id/IP_txt"
+            android:text="本机IP"
+            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/place"
+            app:layout_constraintStart_toStartOf="@id/place"
+            app:layout_constraintEnd_toEndOf="@id/place"/>
+
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_image"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:scaleType="centerCrop"
+            android:background="@color/white"
+            app:shapeAppearanceOverlay="@style/roundedCornerImageStyle"
+            app:strokeColor="@color/white"
+            app:strokeWidth="1dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toTopOf="@id/tv_date"
+            app:layout_constraintStart_toStartOf="@id/tv_date"
+            app:layout_constraintEnd_toEndOf="@id/tv_date"/>
 
         <com.miaxis.attendance.widget.TimeView
             android:id="@+id/tv_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
             android:textColor="@color/white"
             android:textSize="35sp"
             android:textStyle="bold"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/IP_txt"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:time_format="date"
             tools:text="2021-01-01" />
 
@@ -62,20 +111,6 @@
             app:time_format="time"
             tools:text="11:11" />
 
-        <!--        <com.miaxis.attendance.widget.TimeView-->
-        <!--            android:id="@+id/tv_week"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginStart="5dp"-->
-        <!--            android:layout_marginBottom="5dp"-->
-        <!--            android:textColor="@color/white"-->
-        <!--            android:textSize="20sp"-->
-        <!--            android:textStyle="bold"-->
-        <!--            app:layout_constraintBottom_toBottomOf="@id/tv_time"-->
-        <!--            app:layout_constraintLeft_toRightOf="@id/tv_time"-->
-        <!--            app:time_format="week"-->
-        <!--            tools:text="周一" />-->
-
         <com.miaxis.attendance.widget.TimeView
             android:id="@+id/tv_week"
             android:layout_width="wrap_content"
@@ -89,23 +124,9 @@
             app:time_format="week"
             tools:text="周一" />
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/iv_image"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/logo"
-            android:background="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/roundedCornerImageStyle"
-            app:strokeColor="@color/white"
-            app:strokeWidth="1dp" />
-
         <TextView
             android:id="@+id/tv_name"
+            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -119,6 +140,7 @@
 
         <TextView
             android:id="@+id/tv_tempFloat"
+            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -155,8 +177,7 @@
             android:textSize="35sp"
             android:textStyle="bold"
             android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/tv_name"
-            tools:visibility="visible" />
+            app:layout_constraintTop_toBottomOf="@id/tv_name" />
 
         <!--        <FrameLayout-->
         <!--            android:id="@+id/fl_ip"-->
@@ -198,6 +219,7 @@
 
         <com.miaxis.attendance.ui.bar.widget.ClickableLayout
             android:id="@+id/cl_click"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             app:layout_constraintRight_toRightOf="parent"

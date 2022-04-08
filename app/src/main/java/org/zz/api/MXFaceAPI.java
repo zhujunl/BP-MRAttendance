@@ -2,6 +2,7 @@
 package org.zz.api;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.zz.jni.JustouchFaceApi;
 
@@ -9,6 +10,18 @@ public class MXFaceAPI {
 
     private boolean m_bInit = false;
     private final JustouchFaceApi m_dllFaceApi = new JustouchFaceApi();
+
+    private MXFaceAPI() {
+    }
+
+    public static MXFaceAPI getInstance() {
+        return MXFaceAPI.SingletonHolder.instance;
+    }
+
+    private static class SingletonHolder {
+        private static final MXFaceAPI instance = new MXFaceAPI();
+    }
+
 
     /**
      * @param
@@ -120,6 +133,7 @@ public class MXFaceAPI {
         if (m_bInit) {
             iFeaLen = m_dllFaceApi.getFeatureSize();
         }
+        Log.e("facce_FeatureSize:",""+iFeaLen);
         return iFeaLen;
     }
 

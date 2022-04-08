@@ -2,11 +2,14 @@ package com.miaxis.attendance.ui.preview;
 
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
+import android.view.View;
 
 import com.miaxis.attendance.MainViewModel;
 import com.miaxis.attendance.R;
+import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.databinding.FragmentPreviewBinding;
 import com.miaxis.attendance.widget.CameraTextureView;
 import com.miaxis.common.activity.BaseBindingFragment;
@@ -25,6 +28,7 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
 
     private static final String TAG = "PreviewFragment";
     private PreviewViewModel mViewModel;
+    private final Handler mHandler = new Handler();
 
     public static PreviewFragment newInstance() {
         return new PreviewFragment();
@@ -43,6 +47,28 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
         mViewModel.StartCountdown.observe(this, mainViewModel::timeOutReset);
 
         mViewModel.AttendanceBean.observe(this, attendanceBean -> mainViewModel.mAttendance.setValue(attendanceBean));
+
+        mainViewModel.mAttendance.observe(this,attendance->{
+            if (attendance == null) {
+                return;
+            }
+            if (ZZResponse.isSuccess(attendance)){
+                if (mViewModel.isNewUser(attendance.getData())) {
+                    binding.staffCode.setText("工号："+String.valueOf(attendance.getData().UserName));
+                    if(attendance.getData().tempType==0){
+                        binding.staffSimilarity.setText("相似度："+mViewModel.format(attendance.getData().tempFloat));
+                    }
+                    binding.staffStatus.setVisibility(View.VISIBLE);
+                    mHandler.removeCallbacksAndMessages(null);
+                    mHandler.postDelayed(() -> {
+                        binding.staffCode.setText("");
+                        binding.staffSimilarity.setText("");
+                        binding.staffStatus.setVisibility(View.GONE);
+                        mViewModel.setNewUserReset();
+                    }, AppConfig.CloseDoorDelay);
+                }
+            }
+        });
 
         binding.ttvPreview.setSurfaceTextureListener(this);
         binding.ttvPreview.setRotationY(CameraConfig.Camera_RGB.mirror ? 180 : 0); // 镜面对称
@@ -110,6 +136,7 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mHandler.removeCallbacksAndMessages(null);
         mViewModel.Fill_light(false);
         mViewModel.faceRect.removeObservers(this);
         mViewModel.AttendanceBean.removeObservers(this);

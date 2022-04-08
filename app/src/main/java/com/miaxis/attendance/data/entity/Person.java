@@ -58,23 +58,6 @@ public class Person {
     }
 
 
-    //    @Entity(foreignKeys = @ForeignKey(entity = Company.class,parentColumns = "id",childColumns = "emp_id",onDelete = CASCADE),
-    //            indices = @Index(value={"emp_id"},unique = true))
-    //    public class Department {
-    //        @PrimaryKey(autoGenerate = true)
-    //        private int id;
-    //        private String dept;
-    //        @ColumnInfo(name = "emp_id")
-    //        private int empId;
-    //
-    //        public Department(String dept, int empId) {
-    //            this.dept = dept;
-    //            this.empId = empId;
-    //        }
-    //        //省略了getter/setter方法
-    //    }
-
-
     @Override
     public String toString() {
         return "Person{" +

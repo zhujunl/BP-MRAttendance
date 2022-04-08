@@ -2,32 +2,20 @@ package com.miaxis.attendance;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
-import android.os.SystemClock;
-import android.util.Log;
 
 import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.bean.AttendanceBean;
-import com.miaxis.attendance.data.bean.TempBean;
 import com.miaxis.attendance.device.MR990Device;
 import com.miaxis.attendance.service.HttpServer;
 import com.miaxis.common.response.ZZResponse;
 import com.miaxis.common.utils.FileUtils;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
-
 import timber.log.Timber;
 
 public class MainViewModel extends ViewModel {
@@ -52,7 +40,7 @@ public class MainViewModel extends ViewModel {
     public MutableLiveData<Boolean> isIdleDetectStop = new MutableLiveData<>();
     public MutableLiveData<Boolean> startService = new MutableLiveData<>(false);
     public MutableLiveData<ZZResponse<AttendanceBean>> mAttendance = new MutableLiveData<>();
-    public MutableLiveData<TempBean> mTemp=new MutableLiveData<>();
+
     //public MutableLiveData<Boolean> EnableNirProcess = new MutableLiveData<>();
 
     private HttpServer httpServer;
@@ -60,96 +48,7 @@ public class MainViewModel extends ViewModel {
     public MainViewModel() {
     }
 
-    public  void TempList(){
-        TempBean re=new TempBean();
-        re.setTime(simpletimeFormat.format(new Date()));
-        BufferedReader bf=null;
-        try{
-            Long temp=null;
-            String line;
 
-            bf=new BufferedReader(new FileReader("/sys/class/thermal/thermal_zone"+0+"/temp"));
-            line= bf.readLine();
-            if (line!=null){
-                long t=Long.parseLong(line);
-                if(t>0){
-                    temp=t;
-                }
-                re.setBattery(temp);
-            }
-            bf=new BufferedReader(new FileReader("/sys/class/thermal/thermal_zone"+11+"/temp"));
-            line= bf.readLine();
-            if (line!=null){
-                long t=Long.parseLong(line);
-                if(t>0) {
-                    temp=t;
-                }
-                re.setCpu(temp);
-            }
-            bf.close();
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if(bf!=null){
-                try {
-                    bf.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        Timber.d(re.toString());
-        mTemp.postValue(re);
-        FileWriter fw=null;
-        PrintWriter pw = null;
-        try {
-            File file=new File(AppConfig.Temp_File+"电池与cpu温度"+simpleDateFormat.format(new Date())+".txt");
-            if (!file.exists()) {
-                File parentFile = file.getParentFile();
-                if (parentFile != null && !parentFile.exists()) {
-                  parentFile.mkdirs();
-                }
-            }
-            fw=new FileWriter(file,true);
-            pw=new PrintWriter(fw);
-            pw.println(re.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            if(fw!=null){
-                fw.flush();
-                fw.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        finally {
-            if (pw!=null){
-                pw.flush();
-                pw.close();
-            }
-        }
-
-    }
-
-    public void StartThread(){
-        StopThread();
-        thread=new Thread(() -> {
-            while (thread!=null&&!thread.isInterrupted()){
-                SystemClock.sleep(3000);
-                TempList();
-            }
-        });
-        thread.start();
-    }
-
-    public void StopThread(){
-        if(thread!=null&&!thread.isInterrupted()){
-            thread.interrupt();
-            thread=null;
-        }
-    }
 
 
     public void deleteFile(){

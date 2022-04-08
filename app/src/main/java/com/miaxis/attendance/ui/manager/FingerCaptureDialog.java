@@ -12,34 +12,18 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.miaxis.attendance.App;
 import com.miaxis.attendance.R;
-import com.miaxis.attendance.api.HttpApi;
-import com.miaxis.attendance.api.HttpResponse;
 import com.miaxis.attendance.config.AppConfig;
-import com.miaxis.attendance.data.entity.Finger;
-import com.miaxis.attendance.data.entity.LocalImage;
-import com.miaxis.attendance.data.entity.Person;
-import com.miaxis.attendance.data.model.FingerModel;
-import com.miaxis.attendance.data.model.LocalImageModel;
-import com.miaxis.attendance.data.model.PersonModel;
-import com.miaxis.attendance.service.MxResponse;
 import com.miaxis.attendance.ui.finger.MR990FingerStrategy;
 import com.miaxis.common.utils.FileUtils;
 import com.mx.finger.common.MxImage;
 import com.mx.finger.utils.RawBitmapUtils;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatSpinner;
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import timber.log.Timber;
+
+//import com.miaxis.attendance.api.HttpApi;
 
 /**
  * @author Tank
@@ -89,67 +73,67 @@ public class FingerCaptureDialog extends Dialog {
             }
         });
         ImageView iv_finger = findViewById(R.id.iv_finger);
-        findViewById(R.id.btn_confirm).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Disposable subscribe = Observable.create((ObservableOnSubscribe<MxResponse<?>>) emitter -> {
-                    showProgress("上传指纹中，请稍后");
-                    HttpResponse<String> httpResponse = HttpApi.uploadFinger(Integer.parseInt(mxUser.userId), selected_position, new File(fingerPath));
-                    if (httpResponse != null && httpResponse.isSuccess()) {
-                        Person person = PersonModel.findByUserID(mxUser.userId);
-                        if (person == null) {
-                            emitter.onNext(MxResponse.CreateFail(-70, "指纹入库失败"));
-                            return;
-                        }
-                        LocalImage localImage = new LocalImage();
-                        localImage.LocalPath = fingerPath;
-                        localImage.RemotePath = httpResponse.result;
-                        long insert = LocalImageModel.insert(localImage);
-                        if (insert <= 0) {
-                            emitter.onNext(MxResponse.CreateFail(-71, "图像入库失败"));
-                            return;
-                        }
-                        person.fingerIds = person.fingerIds == null ? new ArrayList<>() : person.fingerIds;
-                        person.fingerIds.add(insert);
-                        long update = PersonModel.update(person);
-                        if (update <= 0) {
-                            emitter.onNext(MxResponse.CreateFail(-72, "更新数据失败"));
-                            return;
-                        }
-                        Finger finger = new Finger();
-                        finger.UserId = mxUser.userId;
-                        finger.fingerImageId = insert;
-                        finger.FingerFeature = fingerFeature;
-                        finger.Position = selected_position;
-                        insert = FingerModel.insert(finger);
-                        if (insert <= 0) {
-                            emitter.onNext(MxResponse.CreateFail(-73, "指纹入库失败"));
-                            return;
-                        }
-                        emitter.onNext(MxResponse.CreateSuccess());
-                        return;
-                    }
-                    emitter.onNext(MxResponse.CreateFail(-60, httpResponse != null ? httpResponse.message : "上传指纹信息失败"));
-                }).subscribeOn(Schedulers.from(App.getInstance().threadExecutor))
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(result -> {
-                            showProgress(null);
-                            dismiss();
-                            if (!MxResponse.isSuccess(result)) {
-                                showError(result.getMessage());
-                            } else {
-                                if (pageNotifyInterface != null) {
-                                    pageNotifyInterface.onFlush();
-                                }
-                            }
-                        }, throwable -> {
-                            showProgress(null);
-                            Timber.e("getUserList  throwable:" + throwable);
-                            showError(throwable.getMessage());
-                        });
-
-            }
-        });
+//        findViewById(R.id.btn_confirm).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Disposable subscribe = Observable.create((ObservableOnSubscribe<MxResponse<?>>) emitter -> {
+//                    showProgress("上传指纹中，请稍后");
+//                    HttpResponse<String> httpResponse = HttpApi.uploadFinger(Integer.parseInt(mxUser.userId), selected_position, new File(fingerPath));
+//                    if (httpResponse != null && httpResponse.isSuccess()) {
+//                        Person person = PersonModel.findByUserID(mxUser.userId);
+//                        if (person == null) {
+//                            emitter.onNext(MxResponse.CreateFail(-70, "指纹入库失败"));
+//                            return;
+//                        }
+//                        LocalImage localImage = new LocalImage();
+//                        localImage.LocalPath = fingerPath;
+//                        localImage.RemotePath = httpResponse.result;
+//                        long insert = LocalImageModel.insert(localImage);
+//                        if (insert <= 0) {
+//                            emitter.onNext(MxResponse.CreateFail(-71, "图像入库失败"));
+//                            return;
+//                        }
+//                        person.fingerIds = person.fingerIds == null ? new ArrayList<>() : person.fingerIds;
+//                        person.fingerIds.add(insert);
+//                        long update = PersonModel.update(person);
+//                        if (update <= 0) {
+//                            emitter.onNext(MxResponse.CreateFail(-72, "更新数据失败"));
+//                            return;
+//                        }
+//                        Finger finger = new Finger();
+//                        finger.UserId = mxUser.userId;
+//                        finger.fingerImageId = insert;
+//                        finger.FingerFeature = fingerFeature;
+//                        finger.Position = selected_position;
+//                        insert = FingerModel.insert(finger);
+//                        if (insert <= 0) {
+//                            emitter.onNext(MxResponse.CreateFail(-73, "指纹入库失败"));
+//                            return;
+//                        }
+//                        emitter.onNext(MxResponse.CreateSuccess());
+//                        return;
+//                    }
+//                    emitter.onNext(MxResponse.CreateFail(-60, httpResponse != null ? httpResponse.message : "上传指纹信息失败"));
+//                }).subscribeOn(Schedulers.from(App.getInstance().threadExecutor))
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribe(result -> {
+//                            showProgress(null);
+//                            dismiss();
+//                            if (!MxResponse.isSuccess(result)) {
+//                                showError(result.getMessage());
+//                            } else {
+//                                if (pageNotifyInterface != null) {
+//                                    pageNotifyInterface.onFlush();
+//                                }
+//                            }
+//                        }, throwable -> {
+//                            showProgress(null);
+//                            Timber.e("getUserList  throwable:" + throwable);
+//                            showError(throwable.getMessage());
+//                        });
+//
+//            }
+//        });
         findViewById(R.id.btn_capture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

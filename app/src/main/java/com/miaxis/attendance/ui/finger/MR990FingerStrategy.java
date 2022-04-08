@@ -2,10 +2,11 @@ package com.miaxis.attendance.ui.finger;
 
 import android.graphics.Bitmap;
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.miaxis.attendance.App;
-import com.miaxis.attendance.data.entity.Finger;
-import com.miaxis.attendance.data.model.FingerModel;
+import com.miaxis.attendance.data.entity.Staff;
+import com.miaxis.attendance.data.model.StaffModel;
 import com.miaxis.common.utils.ArrayUtils;
 import com.mx.finger.alg.MxIDFingerAlg;
 import com.mx.finger.api.msc.Bp990FingerApiFactory;
@@ -16,8 +17,7 @@ import com.mx.finger.utils.RawBitmapUtils;
 
 import org.zz.api.MXResult;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import timber.log.Timber;
 
@@ -85,34 +85,36 @@ public class MR990FingerStrategy {
                     continue;
                 }
                 Result<MxImage> result = this.mxMscBigFingerApi.getFingerImageBig(1000);
-                Timber.d("getFingerImageBig:%s", result);
+                Timber.d("finger_getFingerImageBig:%s", result);
                 if (!this.isCancel && !this.isWaite && result.isSuccess()) {
                     MxImage image = result.data;
                     readFingerCallBack.onReadFinger(image);
                     if (!this.isCancel && !this.isWaite && image != null) {
                         byte[] feature = mxFingerAlg.extractFeature(image.data, image.width, image.height);
-                        Timber.d("extractFeature:%s", (feature == null ? null : feature.length));
+                        Timber.d("finger_extractFeature:%s", (feature == null ? null : feature.length));
                         readFingerCallBack.onExtractFeature(image, feature);
-                        HashMap<Long, Finger> all = FingerModel.findAll();
-                        Finger temp = null;
+                        List<Staff> all= StaffModel.findStaff();
+                        Staff temp=null;
                         int index = 0;
-                        for (Map.Entry<Long, Finger> entry : all.entrySet()) {
-                            Finger finger = entry.getValue();
-                            if (!this.isCancel && !this.isWaite && !ArrayUtils.isNullOrEmpty(finger.FingerFeature) &&
+                        for (Staff staff  : all) {
+                            if (!this.isCancel && !this.isWaite && !ArrayUtils.isNullOrEmpty(staff.getFinger0()) &&
                                     !ArrayUtils.isNullOrEmpty(feature)) {
-                                int match = mxFingerAlg.match(finger.FingerFeature, feature, 3);
-                                if (!this.isCancel && !this.isWaite && match == 0) {
-                                    temp = finger;
-                                    //Timber.d("onFeatureMatch: %s", finger);
+                                int match1 = mxFingerAlg.match(staff.getFinger0(), feature, 3);
+                                int match2 = mxFingerAlg.match(staff.getFinger1(), feature, 3);
+                                Log.e("finger_match1",""+match1);
+                                Log.e("finger_match2",""+match2);
+                                if (!this.isCancel && !this.isWaite && (match1 == 0||match2==0)) {
+                                    temp = staff;
+                                    Timber.d("onFeatureMatch: %s", staff);
                                     break;
                                 }
                             }
                             index++;
                         }
                         if (!this.isCancel) {
-                            Timber.d("onFeatureMatch:   %s    %s", index, temp);
+                            Timber.d("finger_onFeatureMatch:   %s    %s", index, temp);
                             readFingerCallBack.onFeatureMatch(image, feature, temp, RawBitmapUtils.raw2Bimap(image.data, image.width, image.height));
-                            Timber.d("onFeatureMatch: end");
+                            Timber.d("finger_onFeatureMatch: end");
 
                         }
                     }
@@ -185,7 +187,7 @@ public class MR990FingerStrategy {
         /**
          * 指纹特征比对成功
          */
-        void onFeatureMatch(MxImage image, byte[] feature, Finger finger, Bitmap bitmap);
+        void onFeatureMatch(MxImage image, byte[] feature, Staff staff, Bitmap bitmap);
 
     }
 

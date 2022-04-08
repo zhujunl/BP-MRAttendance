@@ -7,15 +7,15 @@ import com.miaxis.attendance.data.AppDataBase;
 import com.miaxis.attendance.data.entity.Face;
 import com.miaxis.common.utils.ListUtils;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import timber.log.Timber;
 
 public class FaceModel {
 
-    private static final ConcurrentHashMap<String, Face> FaceMapCache = new ConcurrentHashMap<>();
+//    private static final ConcurrentHashMap<String, Face> FaceMapCache = new ConcurrentHashMap<>();
+    private static List<Face> faceList=new ArrayList<>();
     //private static final CopyOnWriteArrayList<Face> FaceCache = new CopyOnWriteArrayList<>();
 
     public static void init() {
@@ -23,14 +23,15 @@ public class FaceModel {
         if (ListUtils.isNullOrEmpty(all)) {
             return;
         }
-        for (Face face : all) {
-            if (face != null && !TextUtils.isEmpty(face.UserId)) {
-                Face put = FaceModel.FaceMapCache.put(face.UserId, face);
-                if (put != null) {
-                    long delete = AppDataBase.getInstance().FaceDao().delete(put);
-                }
-            }
-        }
+        faceList=all;
+//        for (Face face : all) {
+//            if (face != null && !TextUtils.isEmpty(face.Code)) {
+//                Face put = FaceModel.FaceMapCache.put(face.Code, face);
+//                if (put != null) {
+//                    long delete = AppDataBase.getInstance().FaceDao().delete(put);
+//                }
+//            }
+//        }
     }
 
     public static long insert(Face face) {
@@ -38,12 +39,13 @@ public class FaceModel {
             return -99;
         }
         long insert = AppDataBase.getInstance().FaceDao().insert(face);
-        if (insert > 0) {
-            Face put = FaceModel.FaceMapCache.put(face.UserId, face);
-            if (put != null) {
-                long delete = AppDataBase.getInstance().FaceDao().delete(put);
-            }
-        }
+        faceList.add(face);
+//        if (insert > 0) {
+//            Face put = FaceModel.FaceMapCache.put(face.Code, face);
+//            if (put != null) {
+//                long delete = AppDataBase.getInstance().FaceDao().delete(put);
+//            }
+//        }
         face.id = insert;
         Timber.e("FaceModel insert face:%s", face);
         return insert;
@@ -55,12 +57,17 @@ public class FaceModel {
             return -99;
         }
         long update = AppDataBase.getInstance().FaceDao().update(face);
-        if (update > 0) {
-            Face put = FaceModel.FaceMapCache.put(face.UserId, face);
-            if (put != null) {
-                long delete = AppDataBase.getInstance().FaceDao().delete(put);
+        for (Face f  : faceList) {
+        	if (f.Code.equals(face.Code)&&f.placeId.equals(face.placeId)){
+        	    f=face;
             }
         }
+//        if (update > 0) {
+//            Face put = FaceModel.FaceMapCache.put(face.Code, face);
+//            if (put != null) {
+//                long delete = AppDataBase.getInstance().FaceDao().delete(put);
+//            }
+//        }
         return update;
     }
 
@@ -71,7 +78,7 @@ public class FaceModel {
         }
         long delete = AppDataBase.getInstance().FaceDao().delete(face);
         if (delete > 0) {
-            FaceModel.FaceMapCache.remove(face.UserId);
+            faceList.remove(face);
         }
         return delete;
     }
@@ -89,14 +96,19 @@ public class FaceModel {
     //        return delete;
     //    }
 
-    public static long delete(String userId) {
+    public static long delete(String userId,String place) {
         Timber.e("FaceModel Delete userId:%s", userId);
         if (TextUtils.isEmpty(userId)) {
             return -99;
         }
-        long delete = AppDataBase.getInstance().FaceDao().delete(userId);
+        long delete = AppDataBase.getInstance().FaceDao().delete(userId,place);
         if (delete > 0) {
-            FaceModel.FaceMapCache.remove(userId);
+            for (Face face  : faceList) {
+            	if(face.Code.equals(userId)&&face.placeId.equals(place)){
+            	    faceList.remove(face);
+            	    break;
+                }
+            }
         }
         return delete;
     }
@@ -106,25 +118,24 @@ public class FaceModel {
     //}
 
     public static void deleteAll() {
-        FaceModel.FaceMapCache.clear();
+        faceList.clear();
         AppDataBase.getInstance().FaceDao().deleteAll();
     }
 
-    public static HashMap<String, Face> findAll() {
-        return new HashMap<>(FaceModel.FaceMapCache);
+    public static List<Face> findAll() {
+        return faceList;
     }
 
     public static long allCounts() {
         //return AppDataBase.getInstance().FaceDao().allCounts();
-        return FaceModel.FaceMapCache.size();
+        return faceList.size();
     }
 
-    public static Face findByUserID(String userId) {
+    public static Face findByUserID(String userId,String place) {
         if (TextUtils.isEmpty(userId)) {
             return null;
         }
-        return FaceModel.FaceMapCache.get(userId);
-        //return AppDataBase.getInstance().FaceDao().findByUserID(userID);
+        return AppDataBase.getInstance().FaceDao().findByUserID(userId,place);
     }
 
     public static Face findByID(long id) {

@@ -20,6 +20,10 @@ public class Advertising {
         this.rect = rect;
     }
 
+    public Advertising(int imageId, MxRect rect) {
+        this.imageId = imageId;
+        this.rect = rect;
+    }
 
     public static class MxRect {
         public int left;

@@ -98,7 +98,6 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
         if (mMainViewModel != null) {
             mMainViewModel.stopHttpServer();
             mMainViewModel.destroy();
-            mMainViewModel.StopThread();
         }
         if (mHandler!=null){
             mHandler.removeCallbacksAndMessages(null);

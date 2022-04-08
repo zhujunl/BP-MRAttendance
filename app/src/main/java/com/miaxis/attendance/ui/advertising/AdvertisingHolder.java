@@ -45,7 +45,7 @@ public class AdvertisingHolder extends RecyclerView.ViewHolder implements View.O
         layoutParams.width=rect.width();
         layoutParams.height=rect.height();
         aiv_logo.setLayoutParams(layoutParams);
-        Glide.with(aiv_logo).load(advertising.logoId).error(R.mipmap.ic_launcher).into(aiv_logo);
+        Glide.with(aiv_logo).load(advertising.logoId).into(aiv_logo);
     }
 
     @Override

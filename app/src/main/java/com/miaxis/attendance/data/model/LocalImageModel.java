@@ -76,9 +76,6 @@ public class LocalImageModel {
         return AppDataBase.getInstance().LocalImageDao().findByLocalPath(localPath);
     }
 
-    public static List<LocalImage> findByRemotePath(String remotePath) {
-        return AppDataBase.getInstance().LocalImageDao().findByRemotePath(remotePath);
-    }
 
     public static List<LocalImage> findPage(int pageSize, int offset) {
         return AppDataBase.getInstance().LocalImageDao().findPage(pageSize, offset);

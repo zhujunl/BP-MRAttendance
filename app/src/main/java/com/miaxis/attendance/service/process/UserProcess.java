@@ -1,14 +1,18 @@
 package com.miaxis.attendance.service.process;
 
+import com.alibaba.fastjson.JSON;
 import com.miaxis.attendance.data.model.PersonModel;
 import com.miaxis.attendance.service.HttpServer;
 import com.miaxis.attendance.service.MxResponse;
 import com.miaxis.attendance.service.MxResponseCode;
-import com.miaxis.attendance.service.bean.User;
+import com.miaxis.attendance.service.bean.DeleteBean;
+import com.miaxis.attendance.service.bean.StaffBean;
 import com.miaxis.attendance.service.process.base.GetParamProcess;
 import com.miaxis.attendance.service.process.base.PostBodyProcess;
 import com.miaxis.attendance.service.transform.PersonTransform;
+import com.miaxis.common.utils.StringUtils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,31 +47,18 @@ public class UserProcess {
 
         @Override
         public MxResponse<?> onPostProcess(Map<String, String> param) throws Exception {
-            String toJson = HttpServer.Gson.toJson(param);
-            Timber.e("AddUser:%s", toJson);
-            User user = HttpServer.Gson.fromJson(toJson, User.class);
-            Timber.e("AddUser:%s", user);
-            if (user == null || user.isIllegal()) {
+            String s=param.get("Data");
+            String toJson = HttpServer.Gson.toJson(s);
+            Timber.e("AddUser_tojosn:%s", toJson);
+            String json=StringUtils.unicodetoString(toJson);
+            Timber.e("AddUser_json:%s", json);
+            StaffBean staff= JSON.parseObject(s, StaffBean.class);
+            Timber.e("AddUser_staff:%s", staff);
+            if (staff==null){
                 return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "param error");
             }
-            MxResponse<?> transform = PersonTransform.insert(user);
-            return MxResponse.Create(transform.getCode(), transform.getMessage(), transform.getData());
-        }
-    }
+            MxResponse<?> transform = PersonTransform.insert(staff);
 
-    public static class UpdateUser extends PostBodyProcess {
-
-        public UpdateUser() {
-        }
-
-        @Override
-        protected MxResponse<?> onPostProcess(Map<String, String> param) throws Exception {
-            User user = HttpServer.Gson.fromJson(HttpServer.Gson.toJson(param), User.class);
-            Timber.e("UpdateUser:%s", user);
-            if (user == null || user.isIllegal()) {
-                return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "param error");
-            }
-            MxResponse<?> transform = PersonTransform.update(user);
             return MxResponse.Create(transform.getCode(), transform.getMessage(), transform.getData());
         }
     }
@@ -79,8 +70,46 @@ public class UserProcess {
 
         @Override
         protected MxResponse<?> onPostProcess(Map<String, String> param) throws Exception {
-            User user = HttpServer.Gson.fromJson(HttpServer.Gson.toJson(param), User.class);
-            MxResponse<?> transform = PersonTransform.delete(user);
+            Timber.e("delete:deleteparam:%s",param.toString());
+            String s=param.get("Data");
+            DeleteBean deleteRequest= JSON.parseObject(s, DeleteBean.class);
+            Timber.e("delete:deleteparam:%s",deleteRequest.toString());
+            MxResponse<?> transform = PersonTransform.delete(deleteRequest);
+            return MxResponse.Create(transform.getCode(), transform.getMessage(), transform.getData());
+        }
+    }
+
+    public static class UpdateList extends PostBodyProcess{
+        public UpdateList() {
+
+        }
+
+        @Override
+        protected MxResponse<?> onPostProcess(Map<String, String> param) throws Exception {
+            String s=param.get("Data");
+            List<StaffBean> staffList= JSON.parseArray(s,StaffBean.class);
+            Timber.e("UpdateList_staff:%s", staffList);
+            if (staffList==null){
+                return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "param error");
+            }
+            MxResponse<?> transform = PersonTransform.updateList(staffList);
+            return MxResponse.Create(transform.getCode(), transform.getMessage(), transform.getData());
+        }
+    }
+
+    public static class UpdateStaff extends PostBodyProcess{
+        public UpdateStaff() {
+        }
+
+        @Override
+        protected MxResponse<?> onPostProcess(Map<String, String> param) throws Exception {
+            String s=param.get("Data");
+            StaffBean staff= JSON.parseObject(s,StaffBean.class);
+            Timber.e("UpdateList_staff:%s", staff);
+            if (staff==null){
+                return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "param error");
+            }
+            MxResponse<?> transform = PersonTransform.update(staff);
             return MxResponse.Create(transform.getCode(), transform.getMessage(), transform.getData());
         }
     }

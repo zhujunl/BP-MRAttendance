@@ -152,4 +152,5 @@ dependencies {
 
     implementation 'com.tencent:mmkv:1.0.11'
 
+    compile 'com.alibaba:fastjson:1.1.72.android'
 }

@@ -1,5 +1,6 @@
 package com.miaxis.attendance.service.process;
 
+
 import com.miaxis.attendance.data.model.FingerModel;
 import com.miaxis.attendance.service.MxResponse;
 import com.miaxis.attendance.service.process.base.GetParamProcess;

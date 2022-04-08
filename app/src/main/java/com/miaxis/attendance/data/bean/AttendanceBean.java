@@ -12,7 +12,8 @@ public class AttendanceBean {
 
     public long AttendanceId;//考勤记录ID
     public int Mode;//考勤方式  0无  1人脸   2指纹
-    public String UserId;//用户ID(Person)
+    public String Code;//用户ID
+    public String Place;//场所ID
     public String UserName;//用户姓名
     //public String BaseImage;//底图
     public String CaptureImage;//现场对比图
@@ -31,14 +32,16 @@ public class AttendanceBean {
         return "AttendanceBean{" +
                 "AttendanceId=" + AttendanceId +
                 ", Mode=" + Mode +
-                ", UserId='" + UserId + '\'' +
+                ", Code='" + Code + '\'' +
+                ", Place='" + Place + '\'' +
                 ", UserName='" + UserName + '\'' +
                 ", CaptureImage='" + CaptureImage + '\'' +
                 ", CutImage='" + CutImage + '\'' +
                 ", Status=" + Status +
                 ", create_time='" + create_time + '\'' +
                 ", update_time='" + update_time + '\'' +
-                ", tempFloat='" + tempFloat + '\'' +
+                ", tempFloat=" + tempFloat +
+                ", tempType=" + tempType +
                 '}';
     }
 }

@@ -46,12 +46,11 @@ public class AdvertisingFragment extends BaseBindingFragment<FragmentAdvertising
         binding.vpAdvertising.setAdapter(advertisingAdapter);
 
         List<Advertising> objects = new ArrayList<>();
-        objects.add(new Advertising(R.drawable.advertising_1, R.drawable.logo_2, new Advertising.MxRect(50, 50, 316, 107)));
-        objects.add(new Advertising(R.drawable.advertising_2, R.drawable.logo_2, new Advertising.MxRect(50, 50, 316, 107)));
-        objects.add(new Advertising(R.drawable.advertising_3, R.drawable.logo_2, new Advertising.MxRect(50, 50, 316, 107)));
-        objects.add(new Advertising(R.drawable.advertising_4, R.drawable.logo_2, new Advertising.MxRect(50, 50, 316, 107)));
-        objects.add(new Advertising(R.drawable.advertising_5, R.drawable.logo_2, new Advertising.MxRect(50, 50, 316, 107)));
-        objects.add(new Advertising(R.drawable.advertising_6, R.drawable.logo_2, new Advertising.MxRect(50, 50, 316, 107)));
+        objects.add(new Advertising(R.drawable.advertising_1,  new Advertising.MxRect(50, 50, 316, 107)));
+        objects.add(new Advertising(R.drawable.advertising_2,  new Advertising.MxRect(50, 50, 316, 107)));
+        objects.add(new Advertising(R.drawable.advertising_3,  new Advertising.MxRect(50, 50, 316, 107)));
+        objects.add(new Advertising(R.drawable.advertising_4,  new Advertising.MxRect(50, 50, 316, 107)));
+        objects.add(new Advertising(R.drawable.advertising_5,  new Advertising.MxRect(50, 50, 316, 107)));
         advertisingAdapter.addAll(objects);
     }
 

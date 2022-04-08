@@ -4,13 +4,10 @@ import android.graphics.Bitmap;
 
 import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.bean.AttendanceBean;
-import com.miaxis.attendance.data.entity.Attendance;
-import com.miaxis.attendance.data.entity.Finger;
 import com.miaxis.attendance.data.entity.LocalImage;
-import com.miaxis.attendance.data.entity.Person;
-import com.miaxis.attendance.data.model.AttendanceModel;
+import com.miaxis.attendance.data.entity.Staff;
 import com.miaxis.attendance.data.model.LocalImageModel;
-import com.miaxis.attendance.data.model.PersonModel;
+import com.miaxis.attendance.data.model.StaffModel;
 import com.miaxis.common.response.ZZResponse;
 import com.miaxis.common.utils.FileUtils;
 import com.mx.finger.common.MxImage;
@@ -56,22 +53,24 @@ public class FingerViewModel extends ViewModel implements MR990FingerStrategy.Re
     }
 
     private String lastUserID;
+    private String lastPlaceID;
     private long lastTime;
 
     @Override
-    public void onFeatureMatch(MxImage image, byte[] feature, Finger finger, Bitmap bitmap) {
+    public void onFeatureMatch(MxImage image, byte[] feature, Staff st, Bitmap bitmap) {
         String capturePath = null;
         String UserId = null;
-        Person person = null;
-        if (finger != null) {
-            if (lastUserID != null && lastUserID.equals(finger.UserId) && (System.currentTimeMillis() - lastTime) <= AppConfig.verifyTimeOut) {
+        Staff staff = null;
+        if (st != null) {
+            if (lastUserID != null && lastUserID.equals(st.getCode()) &&lastPlaceID.equals(st.getPlace())&& (System.currentTimeMillis() - lastTime) <= AppConfig.verifyTimeOut) {
                 this.mAttendance.postValue(ZZResponse.CreateFail(-204, "重复识别"));
                 return;
             }
-            lastUserID=finger.UserId;
-            person = PersonModel.findByUserID(UserId = finger.UserId);
-            if (person != null) {
-                capturePath = AppConfig.Path_CaptureImage + "finger" + "_" + person.UserId + "_" + System.currentTimeMillis() + ".bmp";
+            lastUserID=st.getCode();
+            lastPlaceID=st.getPlace();
+            staff= StaffModel.findStaffByCode(st.getCode(),st.getPlace());
+            if (staff != null) {
+                capturePath = AppConfig.Path_CaptureImage + "finger" + "_" + staff.getCode() +"place"+staff.getPlace()+ "_" + System.currentTimeMillis() + ".bmp";
             }
         }
         lastTime = System.currentTimeMillis();
@@ -92,25 +91,17 @@ public class FingerViewModel extends ViewModel implements MR990FingerStrategy.Re
             return;
         }
 
-        Attendance attendance = new Attendance();
-        attendance.UserId = UserId;
-        attendance.CaptureImage = captureLocalImage.id;
-        attendance.Mode = 2;
-        attendance.Status = finger == null ? 2 : 1;
-        attendance.id = AttendanceModel.insert(attendance);
-        if (attendance.id <= 0) {
-            return;
-        }
 
         AttendanceBean attendanceBean = new AttendanceBean();
-        attendanceBean.Status = finger == null ? 2 : 1;
+        attendanceBean.Status = staff == null ? 2 : 1;
         attendanceBean.Mode = 2;
-        attendanceBean.UserId = UserId;
+        attendanceBean.Code = staff == null ? null : staff.getCode();
+        attendanceBean.Place=staff==null?null:staff.getPlace();
         attendanceBean.CaptureImage = capturePath;
         attendanceBean.CutImage = capturePath;
-        attendanceBean.UserName = person == null ? null : person.Name;
+        attendanceBean.UserName = staff == null ? null : staff.getCode();
         attendanceBean.tempType=1;
-        if (finger == null) {
+        if (staff == null) {
             this.mAttendance.postValue(ZZResponse.CreateFail(-203, "人员未找到"));
         } else {
             this.mAttendance.postValue(ZZResponse.CreateSuccess(attendanceBean));

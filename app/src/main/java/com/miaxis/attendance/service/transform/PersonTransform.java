@@ -1,23 +1,26 @@
 package com.miaxis.attendance.service.transform;
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.entity.Face;
 import com.miaxis.attendance.data.entity.Finger;
 import com.miaxis.attendance.data.entity.LocalImage;
-import com.miaxis.attendance.data.entity.Person;
+import com.miaxis.attendance.data.entity.Staff;
 import com.miaxis.attendance.data.model.FaceModel;
 import com.miaxis.attendance.data.model.FingerModel;
 import com.miaxis.attendance.data.model.LocalImageModel;
-import com.miaxis.attendance.data.model.PersonModel;
+import com.miaxis.attendance.data.model.StaffModel;
 import com.miaxis.attendance.service.MxResponse;
 import com.miaxis.attendance.service.MxResponseCode;
+import com.miaxis.attendance.service.bean.DeleteBean;
+import com.miaxis.attendance.service.bean.StaffBean;
 import com.miaxis.attendance.service.bean.User;
 import com.miaxis.attendance.ui.finger.MR990FingerStrategy;
-import com.miaxis.common.response.ZZResponse;
-import com.miaxis.common.utils.DownloadClient;
+import com.miaxis.common.utils.BitmapUtils;
 import com.miaxis.common.utils.FileUtils;
 import com.miaxis.common.utils.ListUtils;
 import com.miaxis.common.utils.StringUtils;
@@ -28,7 +31,6 @@ import org.zz.api.MXImageToolsAPI;
 import org.zz.api.MXResult;
 import org.zz.api.MxImage;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,6 +40,8 @@ import java.util.Random;
 import java.util.Set;
 
 import timber.log.Timber;
+
+//import com.miaxis.attendance.service.bean.User;
 
 /**
  * @author Tank
@@ -51,43 +55,21 @@ public class PersonTransform {
     private static final String TAG = "PersonTransform";
 
     private static final Random RANDOM = new Random();
-
-    public static MxResponse<?> insert(User user) {
-        if (user == null || user.isIllegal()) {
+    //添加
+    public static MxResponse<?> insert(StaffBean staffbean) {
+        if (staffbean==null){
             return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
         }
-        String userId = String.valueOf(user.id);
-        Person person = PersonModel.findByUserID(userId);
-        if (person != null) {
-            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "already exists");
-        }
-        person = new Person();
-        person.UserId = userId;
-
-        person.IdCardNumber = user.id_number;
-        person.Number = user.id_number;
-        person.Name = user.name;
-        person.id = PersonModel.insert(person);
-        if (person.id <= 0) {
-            PersonModel.delete(person);
-            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_FAILED, "insert person failed");
-        }
-        MxResponse<Face> faceMxResponse = processFace(userId, user.url_face);
-        if (!MxResponse.isSuccess(faceMxResponse)) {
-            return faceMxResponse;
-        }
-        MxResponse<List<Long>> listMxResponse = processFingers(userId, user.getUrl_fingers());
-        if (!MxResponse.isSuccess(listMxResponse)) {
-            return listMxResponse;
-        }
-        List<Long> list = new ArrayList<>();
-        list.add(faceMxResponse.getData().faceImageId);
-        person.faceIds = list;
-        person.fingerIds = listMxResponse.getData();
-        long update = PersonModel.update(person);
-        if (update <= 0) {
-            PersonModel.delete(person);
-            FaceModel.delete(faceMxResponse.getData());
+        Staff staff=new Staff();
+        staff.setPlace(staffbean.getPlace());
+        staff.setCode(staffbean.getCode());
+//        processFace(staffbean.getCode(),staffbean.getPlace(),staffbean.getFaceFeature());
+        staff.setFaceFeature(staffbean.getFaceFeature());
+        staff.setFinger0(staffbean.getFinger0());
+        staff.setFinger1(staffbean.getFinger1());
+        long index=StaffModel.insert(staff);
+        if(index<0){
+            StaffModel.delete(staff);
             return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_FAILED, "insert person failed");
         }
         return MxResponse.CreateSuccess();
@@ -123,19 +105,9 @@ public class PersonTransform {
     }
 
     private static MxResponse<LocalImage> doImageProcess(boolean faceMod, String remoteUrl) {
-        List<LocalImage> byRemotePath = LocalImageModel.findByRemotePath(remoteUrl);
-        boolean needDownload = ListUtils.isNullOrEmpty(byRemotePath) ||
-                StringUtils.isNullOrEmpty(byRemotePath.get(0).LocalPath) ||
-                !new File(byRemotePath.get(0).LocalPath).exists();
-        if (needDownload) {
             String savePath = (faceMod ? (AppConfig.Path_FaceImage + "face_") : (AppConfig.Path_FingerImage + "finger_")) + System.currentTimeMillis() + "_" + Math.abs(RANDOM.nextInt()) + ".jpeg";
-            ZZResponse<?> download = new DownloadClient()
-                    .bindDownloadInfo(remoteUrl, savePath)
-                    .bindDownloadTimeOut(5 * 1000, 5 * 1000)
-                    .download();
-            if (!ZZResponse.isSuccess(download)) {
-                return MxResponse.CreateFail(download.getCode(), download.getMsg());
-            }
+            Bitmap bitmap= StringUtils.stringToBitmap(remoteUrl);//这个可以后期删除好像跟下面重复了？
+            BitmapUtils.saveBitmap(bitmap,savePath);
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
             BitmapFactory.decodeFile(savePath, options);
@@ -146,12 +118,7 @@ public class PersonTransform {
             }
 
             LocalImage localImage;
-            if (ListUtils.isNullOrEmpty(byRemotePath)) {
                 localImage = new LocalImage();
-            } else {
-                localImage = byRemotePath.get(0);
-            }
-            localImage.RemotePath = remoteUrl;
             localImage.LocalPath = savePath;
             localImage.id = LocalImageModel.insert(localImage);
             if (localImage.id <= 0) {
@@ -159,13 +126,10 @@ public class PersonTransform {
                 return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert image failed");
             }
             return MxResponse.CreateSuccess(localImage);
-        } else {
-            return MxResponse.CreateSuccess(byRemotePath.get(0));
-        }
     }
 
-    private static MxResponse<Face> processFace(String userId, String url_face) {
-        if (StringUtils.isNullOrEmpty(userId)) {
+    private static MxResponse<Face> processFace(String code, String place,String url_face) {
+        if (StringUtils.isNullOrEmpty(code)) {
             return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "user id error");
         }
         if (StringUtils.isNullOrEmpty(url_face)) {
@@ -176,7 +140,7 @@ public class PersonTransform {
             return MxResponse.CreateFail(doImageProcess.getCode(), doImageProcess.getMessage());
         }
         LocalImage faceImage = doImageProcess.getData();
-        Face temp = FaceModel.findByUserID(userId);
+        Face temp = FaceModel.findByUserID(code,place);
         Timber.e("processFace  find local Face:%s", temp);
         Face face = temp == null ? new Face() : temp;
         if (face.id <= 0 || face.faceImageId != faceImage.id) {
@@ -185,7 +149,8 @@ public class PersonTransform {
                 return MxResponse.CreateFail(featureExtract);
             }
             face.faceImageId = faceImage.id;
-            face.UserId = userId;
+            face.Code = code;
+            face.placeId=place;
             face.FaceFeature = featureExtract.getData();
             face.id = FaceModel.insert(face);
             Timber.e("processFace insert or update Face:%s", face);
@@ -267,7 +232,7 @@ public class PersonTransform {
                     }
                     finger = new Finger();
                     finger.UserId = userId;
-                    finger.Position = getPositionFromList(localImage.RemotePath, url_fingers);
+//                    finger.Position = getPositionFromList(localImage.RemotePath, url_fingers);
                     finger.fingerImageId = localImage.id;
                     finger.FingerFeature = extractFeature.getData();
                     finger.id = FingerModel.insert(finger);
@@ -281,102 +246,118 @@ public class PersonTransform {
         return MxResponse.CreateSuccess(list);
     }
 
-    public static MxResponse<?> update(User user) {
-        if (user == null || user.isIllegal()) {
+//    public static MxResponse<?> update(User user) {
+//        if (user == null || user.isIllegal()) {
+//            return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
+//        }
+//        String userId = String.valueOf(user.id);
+//        Person person = PersonModel.findByUserID(userId);
+//        if (person == null) {
+//            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "not exists");
+//        }
+//        MxResponse<Face> faceMxResponse = processFace(userId, user.url_face);
+//        if (!MxResponse.isSuccess(faceMxResponse)) {
+//            return faceMxResponse;
+//        }
+//        MxResponse<List<Long>> listMxResponse = processFingers(userId, user.getUrl_fingers());
+//        if (!MxResponse.isSuccess(listMxResponse)) {
+//            return listMxResponse;
+//        }
+//        List<Long> list = new ArrayList<>();
+//        list.add(faceMxResponse.getData().faceImageId);
+//        person.UserId = userId;
+//        person.faceIds = list;
+//        person.fingerIds = listMxResponse.getData();
+//        person.IdCardNumber = user.id_number;
+//        person.Number = user.id_number;
+//        person.Name = user.name;
+//        person.id = PersonModel.insert(person);
+//        if (person.id <= 0) {
+//            PersonModel.delete(person);
+//            FaceModel.delete(faceMxResponse.getData());
+//            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_FAILED, "insert person failed");
+//        }
+//        return MxResponse.CreateSuccess();
+//    }
+//
+    //删除
+    public static MxResponse<?> delete(DeleteBean user) {
+        if (user == null) {
             return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
         }
-        String userId = String.valueOf(user.id);
-        Person person = PersonModel.findByUserID(userId);
-        if (person == null) {
-            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "not exists");
-        }
-        MxResponse<Face> faceMxResponse = processFace(userId, user.url_face);
-        if (!MxResponse.isSuccess(faceMxResponse)) {
-            return faceMxResponse;
-        }
-        MxResponse<List<Long>> listMxResponse = processFingers(userId, user.getUrl_fingers());
-        if (!MxResponse.isSuccess(listMxResponse)) {
-            return listMxResponse;
-        }
-        List<Long> list = new ArrayList<>();
-        list.add(faceMxResponse.getData().faceImageId);
-        person.UserId = userId;
-        person.faceIds = list;
-        person.fingerIds = listMxResponse.getData();
-        person.IdCardNumber = user.id_number;
-        person.Number = user.id_number;
-        person.Name = user.name;
-        person.id = PersonModel.insert(person);
-        if (person.id <= 0) {
-            PersonModel.delete(person);
-            FaceModel.delete(faceMxResponse.getData());
-            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_FAILED, "insert person failed");
-        }
+        int index=StaffModel.delete(user);
+        Log.e("delete:","user="+user.toString());
+        Log.e("delete:","index="+index);
         return MxResponse.CreateSuccess();
     }
 
-    public static MxResponse<?> delete(User user) {
-        if (user == null || user.id <= 0) {
-            return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
+    public static MxResponse<?> updateList(List<StaffBean> staffBeans){
+        for (StaffBean   staffBean: staffBeans) {
+        	Staff staff=StaffModel.findStaffByCode(staffBean.getCode(),staffBean.getPlace());
+        	if (staff==null){
+        	    insert(staffBean);
+            }else {
+                staff.setFaceFeature(staffBean.getFaceFeature());
+                staff.setFinger0(staffBean.getFinger0());
+                staff.setFinger1(staffBean.getFinger1());
+                staff.setUpdate_time(System.currentTimeMillis());
+                int index=StaffModel.updateStaff(staff);
+        	}
         }
-        Person person = PersonModel.findByUserID(String.valueOf(user.id));
-        if (person == null) {
-            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "not exists");
-        }
-        FaceModel.delete(person.UserId);
-        FingerModel.delete(person.UserId);
-        PersonModel.delete(person);
 
-        List<Long> faceIds = person.faceIds;
-        for (long faceId : faceIds) {
-            Face face = FaceModel.findByID(faceId);
-            if (face != null) {
-                LocalImageModel.delete(face.faceImageId);
-            }
-        }
-        List<Long> fingerIds = person.fingerIds;
-        for (long fingerId : fingerIds) {
-            Finger finger = FingerModel.findByID(fingerId);
-            if (finger != null) {
-                LocalImageModel.delete(finger.fingerImageId);
-            }
-        }
         return MxResponse.CreateSuccess();
     }
+//
+//    public static MxResponse<?> insertOrUpdate(User user) {
+//        if (user == null || user.isIllegal()) {
+//            return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
+//        }
+//        Timber.e("insertOrUpdate   User:%s", user);
+//        String userId = String.valueOf(user.id);
+//        Person person = PersonModel.findByUserID(userId);
+//        if (person == null) {
+//            person = new Person();
+//        }
+//        person.UserId = userId;
+//        person.IdCardNumber = user.id_number;
+//        person.Number = user.id_number;
+//        person.Name = user.name;
+//        MxResponse<Face> faceMxResponse = processFace(userId, user.url_face);
+//        if (!MxResponse.isSuccess(faceMxResponse)) {
+//            return faceMxResponse;
+//        }
+//        MxResponse<List<Long>> listMxResponse = processFingers(userId, user.getUrl_fingers());
+//        if (!MxResponse.isSuccess(listMxResponse)) {
+//            return listMxResponse;
+//        }
+//        List<Long> list = new ArrayList<>();
+//        list.add(faceMxResponse.getData().id);
+//        person.faceIds = list;
+//        person.fingerIds = listMxResponse.getData();
+//        person.id = PersonModel.insert(person);
+//        if (person.id <= 0) {
+//            PersonModel.delete(person);
+//            FaceModel.delete(faceMxResponse.getData());
+//            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_FAILED, "insert person failed");
+//        }
+//        return MxResponse.CreateSuccess(person.id);
+//    }
 
-    public static MxResponse<?> insertOrUpdate(User user) {
-        if (user == null || user.isIllegal()) {
-            return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
+
+    public static MxResponse<?> update(StaffBean staffBean){
+        String code=staffBean.getCode();
+        String place=staffBean.getPlace();
+        Staff staff=StaffModel.findStaffByCode(code,place);
+        if (staff==null){
+           return insert(staffBean);
         }
-        Timber.e("insertOrUpdate   User:%s", user);
-        String userId = String.valueOf(user.id);
-        Person person = PersonModel.findByUserID(userId);
-        if (person == null) {
-            person = new Person();
-        }
-        person.UserId = userId;
-        person.IdCardNumber = user.id_number;
-        person.Number = user.id_number;
-        person.Name = user.name;
-        MxResponse<Face> faceMxResponse = processFace(userId, user.url_face);
-        if (!MxResponse.isSuccess(faceMxResponse)) {
-            return faceMxResponse;
-        }
-        MxResponse<List<Long>> listMxResponse = processFingers(userId, user.getUrl_fingers());
-        if (!MxResponse.isSuccess(listMxResponse)) {
-            return listMxResponse;
-        }
-        List<Long> list = new ArrayList<>();
-        list.add(faceMxResponse.getData().id);
-        person.faceIds = list;
-        person.fingerIds = listMxResponse.getData();
-        person.id = PersonModel.insert(person);
-        if (person.id <= 0) {
-            PersonModel.delete(person);
-            FaceModel.delete(faceMxResponse.getData());
-            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_FAILED, "insert person failed");
-        }
-        return MxResponse.CreateSuccess(person.id);
+        staff.setFaceFeature(staffBean.getFaceFeature());
+        staff.setFinger0(staffBean.getFinger0());
+        staff.setFinger1(staffBean.getFinger1());
+        staff.setUpdate_time(System.currentTimeMillis());
+        int index=StaffModel.updateStaff(staff);
+        Log.e("Update:%s",""+index);
+        return MxResponse.CreateSuccess();
     }
 
     private static int getPositionFromList(String url, List<User.Finger> url_fingers) {

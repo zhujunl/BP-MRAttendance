@@ -71,12 +71,8 @@ public class BaseAPI {
                 .addInterceptor(chain -> {
                     // 以拦截到的请求为基础创建一个新的请求对象，然后插入Header
                     Request request = chain.request().newBuilder()
-                            .addHeader("device_name", String.valueOf(DevicesName))
-                            .addHeader("mac_address", String.valueOf(MacAddress))
-                            .addHeader("version_name", BuildConfig.VERSION_NAME)
-                            .addHeader("version_code", String.valueOf(BuildConfig.VERSION_CODE))
-                            .addHeader("build_type", BuildConfig.BUILD_TYPE)
-                            .addHeader("application_name", BuildConfig.APPLICATION_ID)
+                            .addHeader("DeviceName", String.valueOf(MacAddress))
+                            .addHeader("Version", BuildConfig.VERSION_NAME)
                             .build();
                     Timber.e("Interceptor:%s", gson.toJson(request.toString()));
                     // 开始请求

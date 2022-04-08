@@ -1167,7 +1167,7 @@ public abstract class NanoHTTPD {
                         if ("application/x-www-form-urlencoded".equalsIgnoreCase(contentType.getContentType())) {
                             this.decodeParms(postLine, this.parms);
                         } else if (postLine.length() != 0) {
-                            files.put("postData", postLine);
+                            files.put("Data", postLine);
                         }
                     }
                 } else if (Method.PUT.equals(this.method)) {

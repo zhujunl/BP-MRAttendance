@@ -25,8 +25,8 @@ public interface FaceDao {
     @Query("SELECT * FROM Face ORDER BY Face.id ASC")
     List<Face> findAll();
 
-    @Query("SELECT * FROM Face WHERE Face.userID=:userID LIMIT 1")
-    List<Face> findByUserID(String userID);
+    @Query("SELECT * FROM Face WHERE Face.Code=:userID and Face.placeId=:place LIMIT 1")
+    Face findByUserID(String userID,String place);
 
     @Query("SELECT * FROM Face WHERE Face.id=:id LIMIT 1")
     List<Face> findByID(long id);
@@ -40,8 +40,8 @@ public interface FaceDao {
     @Delete
     int delete(Face face);
 
-    @Query("DELETE FROM Face WHERE Face.userID=:userId")
-    int delete(String userId);
+    @Query("DELETE FROM Face WHERE Face.Code=:userId and Face.placeId=:place")
+    int delete(String userId,String place);
 
     @Query("DELETE FROM Face WHERE Face.id=:id")
     int delete(long id);

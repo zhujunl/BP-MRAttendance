@@ -2,6 +2,7 @@
 package org.zz.api;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.miaxis.common.utils.ArrayUtils;
 import com.miaxis.common.utils.ListUtils;
@@ -226,6 +227,9 @@ public class MXFaceIdAPI {
         }
         int featureSize = mxGetFeatureSize();
         if (!ArrayUtils.isLength(pFaceFeatureA, featureSize) || !ArrayUtils.isLength(pFaceFeatureB, featureSize)) {
+            Log.e("face_result:featureSize%s",""+featureSize);
+            Log.e("face_result:pFaceFeatureA%s",""+pFaceFeatureA.length);
+            Log.e("face_result:pFaceFeatureB%s",""+pFaceFeatureB.length);
             return MXResult.CreateFail(MXErrorCode.ERR_FEATURE_EMPTY, "特征长度非法");
         }
         float[] fScore = new float[1];

@@ -3,10 +3,6 @@ package com.miaxis.attendance.service;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
-import com.miaxis.attendance.service.process.AttendanceProcess;
-import com.miaxis.attendance.service.process.FaceProcess;
-import com.miaxis.attendance.service.process.FileProcess;
-import com.miaxis.attendance.service.process.FingerProcess;
 import com.miaxis.attendance.service.process.UserProcess;
 import com.miaxis.attendance.service.process.base.BaseProcess;
 
@@ -75,19 +71,21 @@ public class HttpServer extends NanoHTTPD {
             case "/api/user/add":
                 return new UserProcess.AddUser();
             case "/api/user/update":
-                return new UserProcess.UpdateUser();
+                return new UserProcess.UpdateStaff();
+            case "/api/user/addlist":
+                return new UserProcess.UpdateList();
             case "/api/user/delete":
                 return new UserProcess.DeleteUser();
-            case "/api/face/list":
-                return new FaceProcess.QueryAll();
-            case "/api/finger/list":
-                return new FingerProcess.QueryAll();
-            case "/api/attendance/list":
-                return new AttendanceProcess.QueryAll();
-            case "/api/file/list":
-                return new FileProcess.QueryAll();
-            case "/api/file/add":
-                return new FileProcess.AddFile();
+//            case "/api/face/list":
+//                return new FaceProcess.QueryAll();
+//            case "/api/finger/list":
+//                return new FingerProcess.QueryAll();
+//            case "/api/attendance/list":
+//                return new AttendanceProcess.QueryAll();
+//            case "/api/file/list":
+//                return new FileProcess.QueryAll();
+//            case "/api/file/add":
+//                return new FileProcess.AddFile();
             default:
                 return null;
         }

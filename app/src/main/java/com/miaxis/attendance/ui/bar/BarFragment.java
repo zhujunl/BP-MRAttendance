@@ -1,50 +1,30 @@
 package com.miaxis.attendance.ui.bar;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.miaxis.attendance.App;
 import com.miaxis.attendance.BuildConfig;
 import com.miaxis.attendance.MainViewModel;
 import com.miaxis.attendance.R;
 import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.bean.AttendanceBean;
 import com.miaxis.attendance.databinding.FragmentBarBinding;
-import com.miaxis.attendance.tts.TTSSpeechManager;
 import com.miaxis.attendance.ui.bar.widget.ClickableLayout;
 import com.miaxis.attendance.ui.manager.ManagerFragment;
 import com.miaxis.attendance.ui.net.NetFragment;
 import com.miaxis.common.activity.BaseBindingFragment;
 import com.miaxis.common.response.ZZResponse;
+import com.miaxis.common.utils.HardWareUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileReader;
-import java.io.IOException;
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
-
-import io.reactivex.disposables.Disposable;
 
 public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
 
@@ -67,9 +47,8 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
 
         BarViewModel viewModel = new ViewModelProvider(this).get(BarViewModel.class);
         replaceChild(R.id.fl_ip, NetFragment.newInstance());
-        //viewModel.UserCounts.observe(this, integer ->
-        // binding.tvUserCounts.setText("人数：" + (integer == null ? "0 " : ("" + integer))));
-        //viewModel.UserCounts.setValue(PersonModel.allCounts());
+        binding.title.setText(App.getInstance().getKv().decodeString("title"));
+        binding.place.setText("场所ID:"+App.getInstance().getKv().decodeString("place"));
         mMainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         mMainViewModel.startService.setValue(true);
         mMainViewModel.httpServerStatus.observe(this, integer -> {
@@ -85,7 +64,7 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
             }
         });
 
-
+        binding.IPTxt.setText("本机IP:"+ HardWareUtils.getHostIP());
         //binding.ivCloud.setImageResource(R.drawable.ic_baseline_cloud_done);
         binding.ivCloud2.setImageResource(R.drawable.ic_power_enable);
         //binding.ivCloud3.setImageResource(R.drawable.ic_baseline_cloud_done);
@@ -95,7 +74,7 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
                 return;
             }
             if (ZZResponse.isSuccess(attendance)) {
-                mMainViewModel.openDoor();
+                mMainViewModel.openDoor();//开门
                 AttendanceBean attendanceData = attendance.getData();
                 if (viewModel.isNewUser(attendance.getData())) {
                     if (attendanceData.Mode==1){
@@ -103,21 +82,11 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
                     }else {
                         Glide.with(binding.ivImage).load(R.drawable.ic_fingerprint).into(binding.ivImage);
                     }
-                    binding.tvName.setText(String.valueOf(attendanceData.UserName));
-                    if(attendanceData.tempType==0){
-                        binding.tvTempFloat.setText("相似度："+viewModel.format(attendanceData.tempFloat));
-                    }
-                    TTSSpeechManager.getInstance().speak(AppConfig.WelcomeWords);
-                    binding.tvStatus.setVisibility(View.VISIBLE);
-                    //getView().setBackgroundColor(0xFF32CD32);
+
+//                    TTSSpeechManager.getInstance().speak(AppConfig.WelcomeWords);//语音
                     mHandler.removeCallbacksAndMessages(null);
                     mHandler.postDelayed(() -> {
-                        Glide.with(binding.ivImage).load(R.drawable.logo).centerCrop().into(binding.ivImage);
-                        binding.tvName.setText("");
-                        binding.tvTempFloat.setText("");
-                        binding.tvStatus.setVisibility(View.GONE);
-                        //getView().setBackgroundColor(getResources().getColor(R.color.blue));
-                        //getView().setBackgroundResource(R.drawable.bg_bar);
+                        Glide.with(binding.ivImage).load(Color.alpha(0xFFFFFFFF)).centerCrop().into(binding.ivImage);
                         viewModel.setNewUserReset();
                     }, AppConfig.CloseDoorDelay);
                 }
@@ -135,11 +104,6 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
                 }
             });
         }
-
-        mMainViewModel.mTemp.observe(this,tempBean -> {
-            binding.tvCpu.setText("CPU温度："+tempBean.getCpu()/10+"℃");
-            binding.tvBattery.setText("电池温度："+tempBean.getBattery()/1000+"℃");
-        });
     }
 
     @Override

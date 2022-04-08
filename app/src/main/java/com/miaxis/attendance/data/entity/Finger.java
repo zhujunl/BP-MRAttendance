@@ -14,6 +14,7 @@ public class Finger {
      * 用户ID
      */
     public String UserId;//用户ID
+    public String Place;
     public int Position;//手指位置
     public long fingerImageId;//指纹图片ID
     public byte[] FingerFeature;

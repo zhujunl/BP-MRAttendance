@@ -5,8 +5,6 @@ import android.content.Intent;
 
 import com.miaxis.attendance.App;
 
-import org.zz.mr990Driver;
-
 
 /**
  * @author Tank
@@ -74,7 +72,7 @@ public class MR990Device {
 //        setPower(0x20, enable);// LED 绿⾊
 //        setPower(0x21, enable);// LED 红⾊
 //        setPower(0x22, enable);// LED 蓝⾊
-        mr990Driver.zzLightControl(enable?1:0,0);
+//        mr990Driver.zzLightControl(enable?1:0,0);
     }
 
     private void setPower(int type, boolean enable) {

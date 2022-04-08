@@ -7,6 +7,7 @@ import com.miaxis.attendance.data.dao.FaceDao;
 import com.miaxis.attendance.data.dao.FingerDao;
 import com.miaxis.attendance.data.dao.LocalImageDao;
 import com.miaxis.attendance.data.dao.PersonDao;
+import com.miaxis.attendance.data.dao.StaffDao;
 
 import androidx.annotation.NonNull;
 import androidx.room.Room;
@@ -67,11 +68,6 @@ public class AppDataBase {
     public FaceDao FaceDao() {
         return this.mDB.FaceDao();
     }
-
-    public AttendanceDao AttendanceDao() {
-        return this.mDB.AttendanceDao();
-    }
-
     public PersonDao PersonDao() {
         return this.mDB.PersonDao();
     }
@@ -83,5 +79,12 @@ public class AppDataBase {
     public FingerDao FingerDao() {
         return this.mDB.FingerDao();
     }
+    public AttendanceDao AttendanceDao() {
+        return this.mDB.AttendanceDao();
+    }
+
+
+
+    public StaffDao StaffDao(){return this.mDB.StaffDao();}
 
 }

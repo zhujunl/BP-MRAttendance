@@ -58,7 +58,7 @@ public class FileProcess {
             }
             LocalImage localImage = new LocalImage();
             localImage.LocalPath = savePath;
-            localImage.id = LocalImageModel.insert(localImage);
+
             return MxResponse.CreateSuccess(localImage.id);
         }
     }
