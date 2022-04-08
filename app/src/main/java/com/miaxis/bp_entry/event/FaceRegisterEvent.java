@@ -4,21 +4,21 @@ import android.graphics.Bitmap;
 
 public class FaceRegisterEvent {
 
-    private String feature;
+    private byte[] feature;
     private String maskFeature;
     private Bitmap bitmap;
 
-    public FaceRegisterEvent(String feature, String maskFeature, Bitmap bitmap) {
+    public FaceRegisterEvent(byte[] feature, String maskFeature, Bitmap bitmap) {
         this.feature = feature;
         this.maskFeature = maskFeature;
         this.bitmap = bitmap;
     }
 
-    public String getFeature() {
+    public byte[] getFeature() {
         return feature;
     }
 
-    public void setFeature(String feature) {
+    public void setFeature(byte[] feature) {
         this.feature = feature;
     }
 

@@ -10,6 +10,7 @@ import com.miaxis.bp_entry.event.FaceRegisterEvent;
 import com.miaxis.bp_entry.event.FingerRegisterEvent;
 import com.miaxis.bp_entry.manager.ToastManager;
 import com.miaxis.bp_entry.view.base.BaseViewModelFragment;
+import com.miaxis.bp_entry.view.face.FaceFragment;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -20,10 +21,12 @@ import androidx.lifecycle.ViewModelProvider;
 public class RegisterFragment extends BaseViewModelFragment<FragmentRegisterBinding, RegisterViewModel> {
 
     private Staff staff;
+    private boolean modify=false;
 
-    public static RegisterFragment newInstance(Staff staff) {
+    public static RegisterFragment newInstance(Staff staff,boolean modify) {
         RegisterFragment registerFragment=new RegisterFragment();
         registerFragment.setStaff(staff);
+        registerFragment.setModify(modify);
         return registerFragment;
     }
 
@@ -49,21 +52,32 @@ public class RegisterFragment extends BaseViewModelFragment<FragmentRegisterBind
     @Override
     protected void initData() {
         viewModel.placeId.set(staff.getPlace());
-        viewModel.code.set(staff.getCode());
+        if (staff.getCode()!=null)viewModel.code.set(staff.getCode());
+        viewModel.modify.setValue(modify);
     }
 
     @Override
     protected void initView() {
+        binding.title.setText(modify?"信息修改":"信息注册");
         viewModel.registerFlag.observe(this, flag -> {
-            onBackPressed();
+            if (flag)
+                onBackPressed();
         });
         binding.ivBack.setOnClickListener(v -> onBackPressed());
         binding.tvHeader.setOnClickListener(new OnLimitClickHelper(view -> mListener.replaceFragment(FaceRegisterFragment.newInstance())));
+        binding.tvFace.setOnClickListener(new OnLimitClickHelper(view -> {
+            if (viewModel.getFeatureCache()!=null){
+                mListener.replaceFragment(FaceFragment.getInstance(viewModel.getFeatureCache()));
+            }else {
+                ToastManager.toast("未采集人脸",ToastManager.ERROR);
+            }
+        }));
         binding.tvFinger1.setOnClickListener(new OnLimitClickHelper(view -> mListener.replaceFragment(FingerRegisterFragment.newInstance(RegisterViewModel.FINGER1))));
         binding.tvFinger2.setOnClickListener(new OnLimitClickHelper(view -> mListener.replaceFragment(FingerRegisterFragment.newInstance(RegisterViewModel.FINGER2))));
+        binding.btnRegister.setText(modify?"修改":"注册");
         binding.btnRegister.setOnClickListener(v -> {
             if (viewModel.checkInput()) {
-                viewModel.getCourierByPhone();
+                viewModel.mode();
             } else {
                 ToastManager.toast("请输入全部信息", ToastManager.INFO);
             }
@@ -94,10 +108,12 @@ public class RegisterFragment extends BaseViewModelFragment<FragmentRegisterBind
             viewModel.finger1FeatureHint.set("已采集");
             binding.tvFinger1.setOnClickListener(null);
             viewModel.setFingerFeature1(feature);
+            viewModel.setTemplate1(event.getTemplate());
         } else {
             viewModel.finger2FeatureHint.set("已采集");
             binding.tvFinger2.setOnClickListener(null);
             viewModel.setFingerFeature2(feature);
+            viewModel.setTemplate2(event.getTemplate());
         }
         EventBus.getDefault().removeStickyEvent(event);
     }
@@ -110,5 +126,9 @@ public class RegisterFragment extends BaseViewModelFragment<FragmentRegisterBind
 
     public void setStaff(Staff staff) {
         this.staff = staff;
+    }
+
+    public void setModify(boolean modify) {
+        this.modify = modify;
     }
 }

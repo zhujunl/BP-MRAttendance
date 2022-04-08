@@ -301,7 +301,7 @@ public class CameraManager {
     }
 
     private Camera.PreviewCallback previewCallback = (data, camera) -> {
-
+        FaceManager.getInstance().setLastPreviewData(data);
     };
 
     public static Uri getOutputMediaFileUri(Context context) {

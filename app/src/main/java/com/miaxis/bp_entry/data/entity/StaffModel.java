@@ -31,4 +31,7 @@ public class StaffModel {
     public static Staff queryStaff(String place,String code){
         return AppDatabase.getInstance().staffDao().QueryStaff(place,code);
     }
+    public static int modifyStaff(Staff staff){
+        return AppDatabase.getInstance().staffDao().modifyStaff(staff);
+    }
 }

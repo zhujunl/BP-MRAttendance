@@ -97,7 +97,7 @@ public class FingerRegisterViewModel extends BaseViewModel {
                     boolean result = FingerManager.getInstance().matchFeature(template, feature);
                     if (result) {
                         status.set("指纹采集成功");
-                        EventBus.getDefault().postSticky(new FingerRegisterEvent(mark, Base64.encodeToString(template, Base64.NO_WRAP)));
+                        EventBus.getDefault().postSticky(new FingerRegisterEvent(mark, Base64.encodeToString(template, Base64.NO_WRAP),template));
                         fingerResultFlag.postValue(Boolean.TRUE);
                     } else {
                         status.set("验证失败，请重新验证手指");

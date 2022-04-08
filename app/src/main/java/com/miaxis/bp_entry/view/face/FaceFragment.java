@@ -1,23 +1,16 @@
 package com.miaxis.bp_entry.view.face;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import com.miaxis.bp_entry.R;
 import com.miaxis.bp_entry.databinding.FragmentFaceBinding;
 import com.miaxis.bp_entry.manager.CameraManager;
-import com.miaxis.bp_entry.manager.FaceManager;
 import com.miaxis.bp_entry.view.base.BaseViewModelFragment;
 import com.miaxis.bp_entry.view.base.OnFragmentInteractionListener;
 import com.miaxis.bp_entry.view.custom.RoundBorderView;
@@ -39,12 +32,11 @@ public class FaceFragment extends BaseViewModelFragment<FragmentFaceBinding,Face
     private final String TAG="FaceFragment";
     private RoundFrameLayout roundFrameLayout;
     private RoundBorderView roundBorderView;
-    private Bitmap mBitmap=null;
+    private byte[] featureCache;
 
-    public static FaceFragment getInstance(){
-        if (instance==null){
-            instance=new FaceFragment();
-        }
+    public static FaceFragment getInstance(byte[] featureCache){
+        instance=new FaceFragment();
+        instance.setFeatureCache(featureCache);
         return instance;
     }
 
@@ -75,23 +67,26 @@ public class FaceFragment extends BaseViewModelFragment<FragmentFaceBinding,Face
 
     @Override
     protected void initView() {
-        viewModel.imgres.observe(this,bitmap -> binding.ivHeader.setImageBitmap(bitmap));
-        binding.ivBack.setOnClickListener(v-> onBackPressed());
-        binding.tvSwitch.setOnClickListener(v-> {
-//            viewModel.CheckFace();
-//            mListener.replaceFragment(FingerFragmnet.getInstance(mBitmap))
-        });
-        binding.rtvCamera.getViewTreeObserver().addOnGlobalLayoutListener(globalListener);
-        binding.getPicture.setOnClickListener(v -> {
-            try {
-                CameraManager.getInstance().takeBackPicture((data, camera) -> {
-                    CameraManager.getInstance().stopPreview();
-                    ShowPic(data);
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
+        viewModel.verifyFailedFlag.observe(this,flag->{
+            if (flag){
+                viewModel.hint.set("核验成功");
+                viewModel.stopFaceVerify();
+                onBackPressed();
+            }else {
+                binding.tvHint.setText("人脸核验未通过");
             }
         });
+        binding.ivBack.setOnClickListener(v-> onBackPressed());
+        binding.rtvCamera.getViewTreeObserver().addOnGlobalLayoutListener(globalListener);
+        if(featureCache!=null){
+            viewModel.startFaceVerify(featureCache);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        viewModel.stopFaceVerify();
     }
 
     @Override
@@ -143,29 +138,7 @@ public class FaceFragment extends BaseViewModelFragment<FragmentFaceBinding,Face
         });
     };
 
-    private void ShowPic(byte[] data){
-        Bitmap facePicture;
-        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
-        View view= LayoutInflater.from(getActivity()).inflate(R.layout.dialog_picture,null);
-        ImageView img=view.findViewById(R.id.dialog_pic);
-        Button cancel=view.findViewById(R.id.pic_cancel);
-        Button sure=view.findViewById(R.id.pic_sure);
-        facePicture= FaceManager.getInstance().adjustPhotoRotation(BitmapFactory.decodeByteArray(data,0,data.length),90);
-        img.setImageBitmap(facePicture);
-        builder.setView(view);
-        builder.setCancelable(false);
-        AlertDialog alertDialog=builder.create();
-        cancel.setOnClickListener(v -> {
-            CameraManager.getInstance().startBackPreview();
-            alertDialog.dismiss();
-        });
-        sure.setOnClickListener(v -> {
-            mBitmap=facePicture;
-            viewModel.imgres.setValue(facePicture);
-            CameraManager.getInstance().startBackPreview();
-            alertDialog.dismiss();});
-        alertDialog.show();
+    public void setFeatureCache(byte[] featureCache) {
+        this.featureCache = featureCache;
     }
-
-
 }

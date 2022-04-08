@@ -39,10 +39,6 @@ public class ConfigManager {
         this.config = config;
     }
 
-    public void saveConfig(@NonNull Config config) {
-        ConfigModel.saveConfig(config);
-        this.config = config;
-    }
 
     public void saveConfig(@NonNull Config config, @NonNull OnConfigSaveListener listener) {
         Disposable subscribe = Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {

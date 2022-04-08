@@ -4,6 +4,7 @@ package com.miaxis.bp_entry.app;
 import android.app.Application;
 import android.util.Log;
 
+import com.miaxis.bp_entry.api.BaseAPI;
 import com.miaxis.bp_entry.data.dao.AppDatabase;
 import com.miaxis.bp_entry.manager.FaceManager;
 
@@ -32,6 +33,7 @@ public class App extends Application {
     public void initApplication(){
         int result = FaceManager.getInstance().initFaceST(getApplicationContext(), "");
         Log.e(TAG,""+result);
+        BaseAPI.rebuildRetrofit();
         AppDatabase.initDB(this);
     }
 

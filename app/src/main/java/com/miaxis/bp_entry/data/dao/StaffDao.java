@@ -8,6 +8,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 /**
  * @author ZJL
@@ -32,4 +33,7 @@ public interface StaffDao {
 
     @Query("select * from Staff")
     List<Staff> QueryStaffList();
+
+    @Update
+    int modifyStaff(Staff staff);
 }

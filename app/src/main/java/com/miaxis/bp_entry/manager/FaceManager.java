@@ -8,12 +8,14 @@ import android.graphics.Paint;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.miaxis.bp_entry.been.Intermediary;
 import com.miaxis.bp_entry.been.MxRGBImage;
 import com.miaxis.bp_entry.been.PhotoFaceFeature;
 import com.miaxis.bp_entry.event.DrawRectEvent;
+import com.miaxis.bp_entry.event.VerifyEvent;
 import com.miaxis.bp_entry.util.ValueUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -105,6 +107,7 @@ public class FaceManager {
                 }
             }
         };
+        Log.e("人脸算法版本:",mxFaceAPI.mxAlgVersion());
         return re;
     }
 
@@ -163,7 +166,7 @@ public class FaceManager {
                 Thread.sleep(100);
                 asyncDetectHandler.sendEmptyMessage(0);
             } else {
-//                verify(lastPreviewData);
+                verify(lastPreviewData);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -172,58 +175,58 @@ public class FaceManager {
         }
     }
 
-//    private void verify(byte[] detectData) {
-//        try {
-//            String message = "";
-//            long time = System.currentTimeMillis();
-//            byte[] zoomedRgbData = cameraPreviewConvert(detectData, CameraManager.PRE_WIDTH, CameraManager.PRE_HEIGHT, orientation, ZOOM_WIDTH, ZOOM_HEIGHT);
-//            if (zoomedRgbData == null) {
-//                sendEvent(new DrawRectEvent(0, null));
-//                return;
-//            }
-//            int[] faceNum = new int[]{MAX_FACE_NUM};
-//            MXFaceInfoEx[] faceBuffer = makeFaceContainer(faceNum[0]);
-//            boolean result = faceDetect(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, faceNum, faceBuffer);
-//            if (result && faceNum[0] > 0) {
-//                sendEvent(new DrawRectEvent(faceNum[0], faceBuffer));
-//                MXFaceInfoEx mxFaceInfoEx = sortMXFaceInfoEx(faceBuffer);
-//                result = faceQuality(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, 1, new MXFaceInfoEx[]{mxFaceInfoEx});
-//                if (!result) {
-//                    message = "提取特征失败";
-//                    sendEvent(new VerifyEvent(message));
-//                } else {
-//                    //                    if (Math.abs(mxFaceInfoEx.pitch) > 20 || Math.abs(mxFaceInfoEx.yaw) > 20 || Math.abs(mxFaceInfoEx.roll) > 20) {
-//                    //                        message = "请正对摄像头";
-//                    //                    } else if (mxFaceInfoEx.illumination < 50) {
-//                    //                        message = "脸部过暗";
-//                    //                    } else if (mxFaceInfoEx.illumination > 200) {
-//                    //                        message = "脸部过亮";
-//                    //                    } else if (mxFaceInfoEx.blur > 30) {
-//                    //                        message = "图像模糊";
-//                    //                    } else if (mxFaceInfoEx.eyeDistance < 30) {
-//                    //                        message = "请靠近摄像头";
-//                    //                    } else if (mxFaceInfoEx.quality < ValueUtil.DEFAULT_QUALITY_SCORE) {
-//                    //                        message = "人脸质量过低";
-//                    //                    }
-//                    //                    if (!TextUtils.isEmpty(message)) {
-//                    //                        sendEvent(new VerifyEvent(message));
-//                    //                    }
-//                    Intermediary intermediary = new Intermediary();
-//                    intermediary.width = ZOOM_WIDTH;
-//                    intermediary.height = ZOOM_HEIGHT;
-//                    intermediary.mxFaceInfoEx = new MXFaceInfoEx(mxFaceInfoEx);
-//                    intermediary.data = zoomedRgbData;
-//                    intermediaryData = intermediary;
-//                    nova = true;
-//                    Log.e("asd", "检测耗时" + (System.currentTimeMillis() - time) + "-----" + mxFaceInfoEx.quality);
-//                }
-//            } else {
-//                sendEvent(new VerifyEvent("未检测到人脸"));
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+    private void verify(byte[] detectData) {
+        try {
+            String message = "";
+            long time = System.currentTimeMillis();
+            byte[] zoomedRgbData = cameraPreviewConvert(detectData, CameraManager.PRE_WIDTH, CameraManager.PRE_HEIGHT, orientation, ZOOM_WIDTH, ZOOM_HEIGHT);
+            if (zoomedRgbData == null) {
+                sendEvent(new DrawRectEvent(0, null));
+                return;
+            }
+            int[] faceNum = new int[]{MAX_FACE_NUM};
+            MXFaceInfoEx[] faceBuffer = makeFaceContainer(faceNum[0]);
+            boolean result = faceDetect(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, faceNum, faceBuffer);
+            if (result && faceNum[0] > 0) {
+                sendEvent(new DrawRectEvent(faceNum[0], faceBuffer));
+                MXFaceInfoEx mxFaceInfoEx = sortMXFaceInfoEx(faceBuffer);
+                result = faceQuality(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, 1, new MXFaceInfoEx[]{mxFaceInfoEx});
+                if (!result) {
+                    message = "提取特征失败";
+                    sendEvent(new VerifyEvent(message));
+                } else {
+                    if (Math.abs(mxFaceInfoEx.pitch) > 20 || Math.abs(mxFaceInfoEx.yaw) > 20 || Math.abs(mxFaceInfoEx.roll) > 20) {
+                        message = "请正对摄像头";
+                    } else if (mxFaceInfoEx.illumination < 50) {
+                        message = "脸部过暗";
+                    } else if (mxFaceInfoEx.illumination > 200) {
+                        message = "脸部过亮";
+                    } else if (mxFaceInfoEx.blur > 30) {
+                        message = "图像模糊";
+                    } else if (mxFaceInfoEx.eyeDistance < 30) {
+                        message = "请靠近摄像头";
+                    } else if (mxFaceInfoEx.quality < ValueUtil.DEFAULT_QUALITY_SCORE) {
+                        message = "人脸质量过低";
+                    }
+                    if (!TextUtils.isEmpty(message)) {
+                        sendEvent(new VerifyEvent(message));
+                    }
+                    Intermediary intermediary = new Intermediary();
+                    intermediary.width = ZOOM_WIDTH;
+                    intermediary.height = ZOOM_HEIGHT;
+                    intermediary.mxFaceInfoEx = new MXFaceInfoEx(mxFaceInfoEx);
+                    intermediary.data = zoomedRgbData;
+                    intermediaryData = intermediary;
+                    nova = true;
+                    Log.e("asd", "检测耗时" + (System.currentTimeMillis() - time) + "-----" + mxFaceInfoEx.quality);
+                }
+            } else {
+                sendEvent(new VerifyEvent("未检测到人脸"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public Bitmap adjustPhotoRotation(Bitmap bitmap, int orientationDegree) {
         Matrix matrix = new Matrix();
@@ -370,21 +373,36 @@ public class FaceManager {
         boolean result = faceDetect(rgbData, bitmap.getWidth(), bitmap.getHeight(), pFaceNum, pFaceBuffer);
         if (result && pFaceNum[0] > 0) {
             if (pFaceNum[0] == 1) {
+
                 //                result = faceQuality(rgbData, bitmap.getWidth(), bitmap.getHeight(), pFaceNum[0], pFaceBuffer);
                 MXFaceInfoEx mxFaceInfoEx = sortMXFaceInfoEx(pFaceBuffer);
-                //                if (result && mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getRegisterQualityScore()) {
-                byte[] faceFeature = extractFeature(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
-                if (faceFeature != null) {
-                    byte[] maskFaceFeature = extractMaskFeatureForRegister(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
-                    if (maskFaceFeature != null) {
-                        return new PhotoFaceFeature(faceFeature, maskFaceFeature, "提取成功");
+                if (result && mxFaceInfoEx.quality > ValueUtil.DEFAULT_REGISTER_QUALITY_SCORE) {
+                    byte[] faceFeature = extractFeature(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
+                    if (faceFeature == null) {
+                        message = "提取特征失败";
+                    } else {
+                        if (Math.abs(mxFaceInfoEx.pitch) > 20 || Math.abs(mxFaceInfoEx.yaw) > 20 || Math.abs(mxFaceInfoEx.roll) > 20) {
+                            message = "请正对摄像头";
+                        } else if (mxFaceInfoEx.illumination < 50) {
+                            message = "脸部过暗";
+                        } else if (mxFaceInfoEx.illumination > 200) {
+                            message = "脸部过亮";
+                        } else if (mxFaceInfoEx.blur > 30) {
+                            message = "图像模糊";
+                        } else if (mxFaceInfoEx.eyeDistance < 30) {
+                            message = "请靠近摄像头";
+                        } else if (mxFaceInfoEx.quality < ValueUtil.DEFAULT_QUALITY_SCORE) {
+                            message = "人脸质量过低";
+                        }else {
+                            byte[] maskFaceFeature = extractMaskFeatureForRegister(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
+                            if (maskFaceFeature != null) {
+                                return new PhotoFaceFeature(faceFeature, maskFaceFeature, "提取成功");
+                            }
+                        }
                     }
                 } else {
-                    message = "提取特征失败";
+                    message = "人脸质量过低";
                 }
-                //                } else {
-                //                    message = "人脸质量过低";
-                //                }
             } else {
                 message = "检测到多张人脸";
             }
@@ -410,20 +428,20 @@ public class FaceManager {
             if (pFaceNum[0] == 1) {
                 result = faceQuality(rgbData, bitmap.getWidth(), bitmap.getHeight(), pFaceNum[0], pFaceBuffer);
                 MXFaceInfoEx mxFaceInfoEx = sortMXFaceInfoEx(pFaceBuffer);
-                //                if (result && mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getRegisterQualityScore()) {
-                //                if (result && mxFaceInfoEx.quality > ValueUtil.DEFAULT_REGISTER_QUALITY_SCORE) {
+//                                if (result && mxFaceInfoEx.quality > ConfigManager.getInstance().getConfig().getRegisterQualityScore()) {
+            if (result && mxFaceInfoEx.quality > ValueUtil.DEFAULT_REGISTER_QUALITY_SCORE) {
                 byte[] faceFeature = extractFeature(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
                 if (faceFeature != null) {
                     byte[] maskFaceFeature = extractMaskFeatureForRegister(rgbData, bitmap.getWidth(), bitmap.getHeight(), mxFaceInfoEx);
                     if (maskFaceFeature != null) {
                         return new PhotoFaceFeature(faceFeature, maskFaceFeature, "提取成功");
                     }
+                    } else {
+                        message = "提取特征失败";
+                    }
                 } else {
-                    message = "提取特征失败";
+                    message = "人脸质量过低";
                 }
-                //                } else {
-                //                    message = "人脸质量过低";
-                //                }
             } else {
                 message = "检测到多张人脸";
             }

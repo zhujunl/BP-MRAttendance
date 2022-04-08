@@ -51,14 +51,12 @@ public class LoginFragment extends BaseViewModelFragment<FragmentLoginBinding, L
     @Override
     protected void initView() {
         App.getInstance().initApplication();
-        String tittle=binding.title.getText().toString().trim();
-        String placeId=binding.placeId.getText().toString().trim();
-        String attenIp=binding.attenIp.getText().toString().trim();
         binding.loginSure.setOnClickListener(v->{
             if(viewModel.checkInput(binding.title.getText().toString().trim(),binding.placeId.getText().toString().trim(),binding.attenIp.getText().toString().trim())) {
                 viewModel.Login(binding.title.getText().toString().trim(),binding.placeId.getText().toString().trim(),binding.attenIp.getText().toString().trim(),listener);
             }else {
                 ToastManager.toast("请输入完整信息",ToastManager.ERROR);
+                mListener.replaceFragment(HomeFragment.getInstance());
             }
         });
     }

@@ -102,6 +102,7 @@
                 android:src="@drawable/ic_check_white"
                 android:background="@drawable/circular_button_grey"
                 android:adjustViewBounds="true"
+                tools:visibility="visible"
                 app:layout_constraintWidth_percent="0.15"
                 app:layout_constraintStart_toEndOf="@id/iv_retry"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -117,8 +118,7 @@
 <!--                app:layout_constraintStart_toStartOf="@id/iv_take_photo"-->
 <!--                app:layout_constraintEnd_toEndOf="@id/iv_take_photo"-->
 <!--                app:layout_constraintTop_toTopOf="@id/iv_take_photo"-->
-<!--                app:layout_constraintBottom_toBottomOf="@id/iv_take_photo"-->
-<!--                viewadapter:isInvisible="@{viewModel.shootFlag == Status.LOADING}"/>-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/iv_take_photo"/>-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

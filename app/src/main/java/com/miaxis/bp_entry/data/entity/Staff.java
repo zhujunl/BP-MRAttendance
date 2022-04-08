@@ -18,9 +18,9 @@ public class Staff {
 
     private String place;
     private String code;
-    private String faceFeature;
-    private String finger0;
-    private String finger1;
+    private byte[] faceFeature;
+    private byte[] finger0;
+    private byte[] finger1;
 
 
     public Staff() {
@@ -59,27 +59,27 @@ public class Staff {
         this.code = code;
     }
 
-    public String getFaceFeature() {
+    public byte[] getFaceFeature() {
         return faceFeature;
     }
 
-    public void setFaceFeature(String faceFeature) {
+    public void setFaceFeature(byte[] faceFeature) {
         this.faceFeature = faceFeature;
     }
 
-    public String getFinger0() {
+    public byte[] getFinger0() {
         return finger0;
     }
 
-    public void setFinger0(String finger0) {
+    public void setFinger0(byte[] finger0) {
         this.finger0 = finger0;
     }
 
-    public String getFinger1() {
+    public byte[] getFinger1() {
         return finger1;
     }
 
-    public void setFinger1(String finger1) {
+    public void setFinger1(byte[] finger1) {
         this.finger1 = finger1;
     }
 
@@ -99,9 +99,9 @@ public class Staff {
         private long id;
         private String place;
         private String code;
-        private String faceFeature;
-        private String finger0;
-        private String finger1;
+        private byte[] faceFeature;
+        private byte[] finger0;
+        private byte[] finger1;
 
         public Builder() {
         }
@@ -121,17 +121,17 @@ public class Staff {
             return this;
         }
 
-        public Builder faceFeature(String faceFeature) {
+        public Builder faceFeature(byte[] faceFeature) {
             this.faceFeature=faceFeature;
             return this;
         }
 
-        public Builder finger0(String finger0) {
+        public Builder finger0(byte[] finger0) {
             this.finger0=finger0;
             return this;
         }
 
-        public Builder finger1(String finger1) {
+        public Builder finger1(byte[] finger1) {
             this.finger1=finger1;
             return this;
         }

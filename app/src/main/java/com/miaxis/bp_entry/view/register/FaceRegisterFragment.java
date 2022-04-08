@@ -6,6 +6,7 @@ import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import com.miaxis.bp_entry.R;
+import com.miaxis.bp_entry.bridge.Status;
 import com.miaxis.bp_entry.databinding.FragmentFaceRegisterBinding;
 import com.miaxis.bp_entry.manager.CameraManager;
 import com.miaxis.bp_entry.view.base.BaseViewModelFragment;
@@ -18,6 +19,7 @@ public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegi
 
     private RoundBorderView roundBorderView;
     private RoundFrameLayout roundFrameLayout;
+    private byte[] featureCache;
 
     public static FaceRegisterFragment newInstance() {
         return new FaceRegisterFragment();
@@ -56,10 +58,16 @@ public class FaceRegisterFragment extends BaseViewModelFragment<FragmentFaceRegi
             viewModel.takePicture();
         });
         binding.ivRetry.setOnClickListener(v -> {
-            binding.ivTakePhoto.setVisibility(View.VISIBLE);
-            viewModel.retry();
+            if (viewModel.shootFlag.getValue()!= Status.LOADING) {
+                binding.ivTakePhoto.setVisibility(View.VISIBLE);
+                viewModel.retry();
+            }
         });
-        binding.ivConfirm.setOnClickListener(v -> viewModel.confirm());
+        binding.ivConfirm.setOnClickListener(v -> {
+            if (viewModel.shootFlag.getValue()==Status.SUCCESS){
+                viewModel.confirm();
+            }
+        });
         viewModel.confirmFlag.observe(this, aBoolean -> mListener.backToStack(null));
     }
 

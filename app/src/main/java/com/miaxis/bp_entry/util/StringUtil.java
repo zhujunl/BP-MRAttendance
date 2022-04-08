@@ -1,6 +1,11 @@
 package com.miaxis.bp_entry.util;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
+
+import java.io.ByteArrayOutputStream;
 
 /**
  * @author ZJL
@@ -51,5 +56,32 @@ public class StringUtil {
             bytes[i+1]=b;
         }
         return bytes;
+    }
+
+    public static Bitmap stringToBitmap(String string){
+        //数据库中的String类型转换成Bitmap
+        Bitmap bitmap=null;
+        if(string!=null){
+            byte[] bytes= Base64.decode(string,Base64.DEFAULT);
+            bitmap= BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+            return bitmap;
+        }
+        else {
+            return null;
+        }
+    }
+    public static String bitmapToString(Bitmap bitmap){
+        //用户在活动中上传的图片转换成String进行存储
+        String string=null;
+        if(bitmap!=null){
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] bytes = stream.toByteArray();// 转为byte数组
+            string=Base64.encodeToString(bytes,Base64.DEFAULT);
+            return string;
+        }
+        else{
+            return "";
+        }
     }
 }

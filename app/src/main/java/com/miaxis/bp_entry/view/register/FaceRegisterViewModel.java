@@ -26,6 +26,7 @@ import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class FaceRegisterViewModel extends BaseViewModel {
@@ -34,7 +35,7 @@ public class FaceRegisterViewModel extends BaseViewModel {
     public ObservableField<String> hint = new ObservableField<>("请自拍一张大头照");
     public MutableLiveData<Boolean> confirmFlag = new SingleLiveEvent<>();
 
-    private String featureCache;
+    private byte[] featureCache;
     private String maskFeatureCache;
     private Bitmap headerCache;
 
@@ -66,14 +67,14 @@ public class FaceRegisterViewModel extends BaseViewModel {
     }
 
     public void confirm() {
-        if (!TextUtils.isEmpty(featureCache) && !TextUtils.isEmpty(maskFeatureCache) && headerCache != null) {
+        if (!TextUtils.isEmpty(featureCache.toString()) && !TextUtils.isEmpty(maskFeatureCache) && headerCache != null) {
             EventBus.getDefault().postSticky(new FaceRegisterEvent(featureCache, maskFeatureCache, headerCache));
             confirmFlag.setValue(Boolean.TRUE);
         }
     }
 
     private void handlePhoto(byte[] data, Camera camera) {
-        Observable.create((ObservableOnSubscribe<Bitmap>) emitter -> {
+        Disposable subscribe = Observable.create((ObservableOnSubscribe<Bitmap>) emitter -> {
             Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
             Matrix matrix = new Matrix();
             matrix.postRotate(CameraManager.getInstance().getPictureOrientation());
@@ -86,7 +87,7 @@ public class FaceRegisterViewModel extends BaseViewModel {
                     PhotoFaceFeature photoFaceFeature = FaceManager.getInstance().getPhotoFaceFeatureByBitmapForRegisterPosting(bitmap);
                     if (photoFaceFeature.getFaceFeature() != null && photoFaceFeature.getMaskFaceFeature() != null) {
                         headerCache = bitmap;
-                        featureCache = Base64.encodeToString(photoFaceFeature.getFaceFeature(), Base64.NO_WRAP);
+                        featureCache = photoFaceFeature.getFaceFeature();
                         maskFeatureCache = Base64.encodeToString(photoFaceFeature.getMaskFaceFeature(), Base64.NO_WRAP);
                         return true;
                     }

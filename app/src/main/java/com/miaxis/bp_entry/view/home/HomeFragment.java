@@ -9,6 +9,7 @@ import com.miaxis.bp_entry.R;
 import com.miaxis.bp_entry.app.App;
 import com.miaxis.bp_entry.data.entity.Config;
 import com.miaxis.bp_entry.data.entity.ConfigManager;
+import com.miaxis.bp_entry.data.entity.Staff;
 import com.miaxis.bp_entry.databinding.FragmentHomeBinding;
 import com.miaxis.bp_entry.server.UdpServer;
 import com.miaxis.bp_entry.util.HardWareUtils;
@@ -81,12 +82,25 @@ public class HomeFragment extends BaseViewModelFragment<FragmentHomeBinding,Home
         });
         if (config!=null){
             binding.tittleTxt.setText(config.tittle);
-            binding.placeTxt.setText(config.place);
+            binding.placeTxt.setText("场所地址："+config.place);
         }
-        binding.IPTxt.setText(HardWareUtils.getHostIP());
+        binding.IPTxt.setText("本机IP："+HardWareUtils.getHostIP());
         binding.entryBegin.setOnClickListener(v->{
-            mListener.replaceFragment(RegisterFragment.newInstance(viewModel.staffRegiter.getValue()));
+            mListener.replaceFragment(RegisterFragment.newInstance(viewModel.staffRegiter.getValue(),false));
             binding.entryBegin.setVisibility(View.INVISIBLE);
+        });
+        binding.tittleTxt.setOnClickListener(v->{
+            Log.e("标题：","点击");
+            if (config.place!=null){
+                Staff staff=new Staff();
+                staff.setPlace(config.place);
+                mListener.replaceFragment(RegisterFragment.newInstance(staff,true));
+            }
+        });
+        binding.tittleTxt.setOnLongClickListener(v -> {
+            Log.e("标题：","长按");
+            viewModel.updateList();
+            return true;
         });
     }
 

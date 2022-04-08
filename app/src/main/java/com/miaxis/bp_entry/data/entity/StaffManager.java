@@ -39,4 +39,8 @@ public class StaffManager {
         StaffModel.delete(palce,code);
     }
 
+    public int modifyStaff(Staff staff){
+        return StaffModel.modifyStaff(staff);
+    }
+
 }
